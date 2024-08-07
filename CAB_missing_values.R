@@ -57,6 +57,7 @@ KG_data$weight = KG_data$Weight
 KG_data$Weight = NULL
 
 #Fixing all the Social Media Codes (they were coded in different ways across countries)
+library(car)
 table(KZ_data$q23_a)
 KZ_data$q23_a = recode(KZ_data$q23_a, '1=0;2=1;3=2;4=3;5=4;6=5;7=6;8=7;9=8;10=9;11=10;-7=-7;98=98;99=99')
 table(KZ_data$q23_a)
@@ -231,6 +232,7 @@ variables <- c('q1', 'q2', 'q3', 'q3a', 'q4', 'q4_oth', 'q5', 'q5a', 'q6', 'q7',
                'q38_d', 'q38_e', 'q38_f', 'q39_a', 'q39_b', 'q39_c', 'q40_b', 'q40_c', 'q40_d', 'q40_e')
 
 # Replace specified values with NA in the defined variables
+library(dplyr)
 KZ_data <- KZ_data %>%
   mutate(across(all_of(variables), ~ replace(.x, .x %in% c(93, 94, 97, 98, 99, -7, -9), NA)))
 
@@ -368,4 +370,4 @@ UZ_data[] <- lapply(UZ_data, function(x) {
 
 rm(variables)
 
-save.image("C:/Users/102142/Dropbox/Research/Internet Politics/Central Asia/Central Asia Grant Survey Project/Data Files/github-CAB-Original-Coding/CAB_data.RData")
+save.image("C:/Users/102142/Dropbox/Research/Internet Politics/Central Asia/Central Asia Grant Survey Project/GitHub-CAB-Issues/CAB_data_issues.RData")
