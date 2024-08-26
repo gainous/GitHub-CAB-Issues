@@ -18,8 +18,8 @@ mod_econ = glm(General_economic_situation_Combined ~ news_balance_n_sc + sm_crit
                + countryKG + countryKZ + countryTJ + countryUZ, data = CAB_data, family = binomial)
 summary(mod_econ)
 
-mod_corrupt = glm(Corruption_Combined ~ avoidance_index 
-                   + gender_Male + age_n_sc + age_n_sc + urbanicity_Village + edu_n_sc 
+mod_corrupt = glm(Terrorism_Combined ~ avoidance_index + sm_disagreement_index
+                   + gender_Male + age_n_sc + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc
                , data = CAB_data, family = binomial)
 summary(mod_corrupt)
 
