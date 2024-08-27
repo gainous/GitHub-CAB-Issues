@@ -1,9 +1,14 @@
 names(CAB_data)
 
+library(data.table)
+CAB_data_dem = rbindlist(list(GA_data,KG_data,KZ_data), fill = TRUE)
+table(CAB_data_dem$country)
+
 
 mod_econ = glm(General_economic_situation ~ tiktok_n_sc + facebook_n_sc + instagram_n_sc + twitter_n_sc + vkontakte_n_sc + 
                  age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc, data = CAB_data, family = binomial)
 summary(mod_econ)
+
 ai_model_1 = lm(AI_n_sc ~ tiktok_n_sc + facebook_n_sc + instagram_n_sc + twitter_n_sc + vkontakte_n_sc + media_trust_index + tracking_index +
                   age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_merge, weights = weight)
 summary(ai_model_1)

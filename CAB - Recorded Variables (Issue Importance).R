@@ -6,8 +6,7 @@ install.packages("dplyr")
 library(readxl)
 library(dplyr)
 
-# Import KG_Data Excel File
-KG_data <- read_excel("KG_data.xlsx")
+
 
 # Create the new column - Political Instability as the most important issue or not
 table(KG_data$q13_a)
@@ -177,9 +176,6 @@ KG_data <- KG_data %>%
 
 
 
-# Import KZ_Data Excel File
-KZ_data <- read_excel("KZ_data.xlsx")
-
 # Create the new column - Political Instability as the most important issue or not
 KZ_data <- KZ_data %>%
   mutate(Political_Instability = ifelse(q13_a == 1, 1, 0))
@@ -339,9 +335,6 @@ KZ_data <- KZ_data %>%
 
 
 
-
-# Import TJ_Data Excel File
-TJ_data <- read_excel("TJ_data.xlsx")
 
 # Create the new column - Political Instability as the most important issue or not
 TJ_data <- TJ_data %>%
@@ -510,8 +503,6 @@ TJ_data <- TJ_data %>%
 
 
 
-# Import UZ_Data Excel File
-UZ_data <- read_excel("UZ_data.xlsx")
 
 # Create the new column - Political Instability as the most important issue or not
 UZ_data <- UZ_data %>%
