@@ -11,7 +11,7 @@ p_values <- summary(model)$coefficients[, "Pr(>|z|)"]
 if (any(p_values < significance_level)) {
   significant_models[[dep_var]] <- model  # Store the model if any p-value is significant
 }
-}
+
 
 # Output the names of the dependent variables with significant results
 cat("Models with significant predictors (p-value < 0.05):\n")
