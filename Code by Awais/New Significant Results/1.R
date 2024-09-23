@@ -1,5 +1,5 @@
 library(dplyr)
-
+library(jtools)
 # Domestic Issues ####
 Domestic_Issues <- glm(Domestic_Issues ~ tiktok_n_sc + facebook_n_sc + instagram_n_sc + twitter_n_sc + 
                          vkontakte_n_sc + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc, 
