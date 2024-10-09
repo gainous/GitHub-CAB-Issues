@@ -34,6 +34,12 @@ sm_war_filter <- CAB_data_dem[
     CAB_data_dem$participate_vote_n == 2,
 ]
 
+# Count the number of rows in sm_war_filter
+num_entries <- nrow(sm_war_filter)
+
+# Display the result
+print(num_entries)
+
 # Now create the sm_warriors matrix using the filtered data
 sm_warriors <- cbind(
   sm_war_filter$sm_engage_critical_n_sc,
@@ -46,14 +52,97 @@ library(psy)
 # Calculating the Cronbach's alpha for sm_warriors
 cronbach(sm_warriors)
 
-library(scales)
+
+
+## without filtered data#
+
+sm_warriors2 <- cbind(
+  CAB_data_dem$sm_engage_critical_n_sc,
+  #CAB_data_dem$sm_engage_friends_n_sc,
+  CAB_data_dem$sm_engage_groups_n_sc,
+  CAB_data_dem$sm_engage_post_n_sc
+)
+cronbach(sm_warriors2)
+
+## without filter but taking into account those variables #
+
+CAB_data_dem$participate_protest_for_smw = factor(CAB_data_dem$participate_protest, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_protest_for_smw = as.numeric(CAB_data_dem$participate_protest_for_smw)
+CAB_data_dem$participate_protest_for_smw = scales::rescale(CAB_data_dem$participate_protest_for_smw, to = c(0, 1))
+
+CAB_data_dem$participate_rally_for_smw = factor(CAB_data_dem$participate_rally, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_rally_for_smw = as.numeric(CAB_data_dem$participate_rally_for_smw)
+CAB_data_dem$participate_rally_for_smw = scales::rescale(CAB_data_dem$participate_rally_for_smw, to = c(0, 1))
+
+CAB_data_dem$participate_meetin_for_smw = factor(CAB_data_dem$participate_meeting, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_meetin_for_smw = as.numeric(CAB_data_dem$participate_meetin_for_smw)
+CAB_data_dem$participate_meetin_for_smw = scales::rescale(CAB_data_dem$participate_meetin_for_smw, to = c(0, 1))
+table(CAB_data_dem$participate_meetin_for_smw)
+
+CAB_data_dem$participate_volunteer_for_smw = factor(CAB_data_dem$participate_volunteer, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_volunteer_for_smw = as.numeric(CAB_data_dem$participate_volunteer_for_smw)
+CAB_data_dem$participate_volunteer_for_smw = scales::rescale(CAB_data_dem$participate_volunteer_for_smw, to = c(0, 1))
+table(CAB_data_dem$participate_volunteer_for_smw)
+
+CAB_data_dem$participate_member_for_smw = factor(CAB_data_dem$participate_member, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_member_for_smw = as.numeric(CAB_data_dem$participate_member_for_smw)
+CAB_data_dem$participate_member_for_smw = scales::rescale(CAB_data_dem$participate_member_for_smw, to = c(0, 1))
+table(CAB_data_dem$participate_member_for_smw)
+
+CAB_data_dem$participate_contact_for_smw = factor(CAB_data_dem$participate_contact, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_contact_for_smw = as.numeric(CAB_data_dem$participate_contact_for_smw)
+CAB_data_dem$participate_contact_for_smw = scales::rescale(CAB_data_dem$participate_contact_for_smw, to = c(0, 1))
+table(CAB_data_dem$participate_contact_for_smw)
+
+
+CAB_data_dem$participate_vote_for_smw = factor(CAB_data_dem$participate_vote, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_vote_for_smw = as.numeric(CAB_data_dem$participate_vote_for_smw)
+CAB_data_dem$participate_vote_for_smw = scales::rescale(CAB_data_dem$participate_vote_for_smw, to = c(0, 1))
+table(CAB_data_dem$participate_vote_for_smw)
+
+
+# Now create the sm_warriors matrix using the filtered data
+sm_warriors3 <- cbind(
+  # CAB_data_dem$sm_engage_critical_n_sc,
+  CAB_data_dem$sm_engage_friends_n_sc,
+  # CAB_data_dem$sm_engage_groups_n_sc,
+  # CAB_data_dem$sm_engage_post_n_sc,
+  CAB_data_dem$participate_rally_for_smw,
+  CAB_data_dem$participate_protest_for_smw,
+  CAB_data_dem$participate_meetin_for_smw,
+  CAB_data_dem$participate_volunteer_for_smw,
+  CAB_data_dem$participate_member_for_smw,
+  # CAB_data_dem$participate_vote_for_smw,
+  CAB_data_dem$participate_contact_for_smw)
+
+cronbach(sm_warriors3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Dillusioned Reformists Index ######
-CAB_data_dem$system_capable_rescaled = scales::rescale(CAB_data_dem$system_capable_n_sc, to = c(0, 1))
-CAB_data_dem$sm_engage_critical_n_sc = scales::rescale(CAB_data_dem$sm_engage_critical_n_sc, to = c(0, 1))
+library(scales)
+CAB_data_dem$system_capable_rescaled = scales::rescale(CAB_data_dem$system_capable_n_sc, to = c(0, 1)) #1=towards disagreement
 
 dil_ref_filter <- CAB_data_dem[
   CAB_data_dem$participate_rally_n == 1 ,
 ]
+
+# Count the number of rows in sm_war_filter
+num_entries_1 <- nrow(dil_ref_filter)
+
+# Display the result
+print(num_entries_1)
 
 dil_ref = cbind(
   dil_ref_filter$sm_engage_critical_n_sc,
@@ -62,9 +151,17 @@ dil_ref = cbind(
   dil_ref_filter$trust_western_n_sc)
 cronbach(dil_ref)
 
+#without filtered data##
+dil_ref_2 = cbind(
+  CAB_data_dem$sm_engage_critical_n_sc,
+  CAB_data_dem$system_capable_rescaled,
+  CAB_data_dem$system_hurdles_participate_n_sc,
+  CAB_data_dem$trust_western_n_sc)
+cronbach(dil_ref_2)
+
+
 
 library(psych)
-alpha(dil_ref)
 
 # Silent Observers #####
 library(dplyr)
@@ -72,26 +169,11 @@ library(car)
 library(scales)
 
 # Recoding Political Disucssion with Family and Friends #
-
-CAB_data_dem$pol_discuss <- recode(CAB_data_dem$pol_discuss ,
-                                   "1" = 'A few times a day',
-                                   "2" = 'Once a day',
-                                   "3" = 'Three to five days a week',
-                                   "4" = 'Once a week',
-                                   "5" = 'Less often than once a week',
-                                   "6" = 'Never')
-# Step 3: Convert the recoded variable to an ordered factor
-CAB_data_dem$pol_discuss <- factor(CAB_data_dem$pol_discuss, 
-                                   levels = c('A few times a day', 'Once a day', 
-                                              'Three to five days a week', 'Once a week', 
-                                              'Less often than once a week', 'Never'), 
-                                   ordered = TRUE)
-
-# Step 4: Convert the ordered factor to numeric for scaling
 CAB_data_dem$pol_dis <- as.numeric(CAB_data_dem$pol_discuss)
 
+library(scales)
 # Step 5: Rescale the numeric values to the desired direction
-CAB_data_dem$pol_dis <- rescale(CAB_data_dem$pol_dis, to = c(0, 1))
+CAB_data_dem$pol_dis <- scales::rescale(CAB_data_dem$pol_dis, to = c(0, 1))
 CAB_data_dem$trust_central_silob = scales::rescale(CAB_data_dem$trust_central_n_sc, to = c(0, 1))
 CAB_data_dem$trust_local_silob = scales::rescale(CAB_data_dem$trust_local_n_sc, to = c(0, 1))
 CAB_data_dem$sm_disagreement_politics_silob = scales::rescale(CAB_data_dem$sm_disagreement_politics_n_sc, to = c(1, 0))
@@ -102,17 +184,25 @@ CAB_data_dem$sm_engage_critical_silob = scales::rescale(CAB_data_dem$sm_engage_c
 CAB_data_dem$sm_engage_supportive_silob = scales::rescale(CAB_data_dem$sm_engage_supportive_n, to = c(0, 1))
 CAB_data_dem$sm_engage_offline_silob = scales::rescale(CAB_data_dem$sm_engage_offline_n, to = c(0, 1))
 
-# Filter cases who did'nt participate in any political activity/rally in last 12 months 
+# Filter cases who didn't participate in any political activity/rally in last 12 months 
 sil_obs_filter <- CAB_data_dem[
-  CAB_data_dem$participate_rally_n == 2 ,
+  CAB_data_dem$participate_rally_n == 2 ,  # 2= not participated in a rally in last 12 months ####
 ]
+
+
+# Count the number of rows in sm_war_filter
+num_entries_2 <- nrow(sil_obs_filter)
+
+# Display the result
+print(num_entries_2)
+
 
 library(psy)
 sil_obs <- cbind(
   sil_obs_filter$pol_dis,
   sil_obs_filter$trust_central_silob,
   sil_obs_filter$trust_local_silob,
-  # #sil_obs_filter$sm_critical_local_n_sc,
+  # sil_obs_filter$sm_critical_local_n_sc,
   # sil_obs_filter$sm_critical_central_n_sc,
   # sil_obs_filter$sm_disagreement_politics_silob,
   # sil_obs_filter$sm_engage_friends_silob,
@@ -124,21 +214,27 @@ sil_obs <- cbind(
 
 cronbach(sil_obs)
 
-library(psych)
-alpha(sil_obs)
 # if we want all negatively correlated item to reverse their directions#
-alpha(sil_obs_removethis, check.keys = TRUE)
+#library(psych)
+#alpha(sil_obs)
+#alpha(sil_obs_removethis, check.keys = TRUE)
+
 
 
 # Ideologically Consistent Conservatives Index ####
-ide_con_filter$trust_US_negative = scales::rescale(ide_con_filter$trust_US_n, to = c(0, 1))
-ide_con_filter$trust_EU_negative = scales::rescale(ide_con_filter$trust_EU_n, to = c(0, 1))
-
-
-
 ide_con_filter <- CAB_data_dem[
   CAB_data_dem$participate_rally_n == 1 ,
 ]
+
+ide_con_filter$trust_US_negative = scales::rescale(ide_con_filter$trust_US_n, to = c(0, 1))
+ide_con_filter$trust_EU_negative = scales::rescale(ide_con_filter$trust_EU_n, to = c(0, 1))
+
+num_entries_3 <- nrow(ide_con_filter)
+
+# Display the result
+print(num_entries_3)
+
+
 idconsisten_conserv = cbind(
   ide_con_filter$trust_central_n_sc,
   ide_con_filter$trust_local_n_sc,
@@ -153,3 +249,64 @@ idconsisten_conserv = cbind(
   ide_con_filter$trust_EU_negative,
   ide_con_filter$pol_news_tv_n_sc)
 cronbach(idconsisten_conserv)
+
+
+#without filtered data#
+idconsisten_conserv_1 = cbind(
+  CAB_data_dem$trust_central_n_sc,
+  CAB_data_dem$trust_local_n_sc,
+  CAB_data_dem$system_capable_n_sc,
+  CAB_data_dem$system_proud_n_sc,
+  CAB_data_dem$trust_state_n_sc,
+  CAB_data_dem$system_deserves_n_sc,
+  CAB_data_dem$system_live_n_sc,
+  CAB_data_dem$trust_US_negative,
+  CAB_data_dem$trust_china_n_sc,
+  CAB_data_dem$trust_russia_n_sc,
+  CAB_data_dem$trust_EU_negative,
+  CAB_data_dem$pol_news_tv_n_sc)
+cronbach(idconsisten_conserv_1)
+
+#without filered and taking into account participation rally#
+CAB_data_dem$participate_rally_for_smw = factor(CAB_data_dem$participate_rally, levels = c('Yes', 'No'), ordered = TRUE)
+CAB_data_dem$participate_rally_for_smw = as.numeric(CAB_data_dem$participate_rally_for_smw)
+CAB_data_dem$participate_rally_for_smw = scales::rescale(CAB_data_dem$participate_rally_for_smw, to = c(1, 0))
+
+idconsisten_conserv_2 = cbind(
+  CAB_data_dem$trust_central_n_sc,
+  CAB_data_dem$trust_local_n_sc,
+  CAB_data_dem$system_capable_n_sc,
+  CAB_data_dem$system_proud_n_sc,
+  CAB_data_dem$trust_state_n_sc,
+  CAB_data_dem$system_deserves_n_sc,
+  CAB_data_dem$system_live_n_sc,
+  CAB_data_dem$trust_US_negative,
+  CAB_data_dem$trust_china_n_sc,
+  CAB_data_dem$trust_russia_n_sc,
+  CAB_data_dem$trust_EU_negative,
+  CAB_data_dem$participate_rally_for_smw,
+  CAB_data_dem$pol_news_tv_n_sc)
+cronbach(idconsisten_conserv_2)
+
+Nationalistic Defenders Index=(Reversed_System_Support)+(Reversed_Supportive_Engagement)+(Critical_Local_Exposure)+(Critical_Central_Exposure)+(Reversed_Trust_Central_Gov)+(Reversed_Pride_Government)+(Political_Activity)+(Voted_Recent_Election)+(Reversed_Freedom_Political_Views)+(Supportive_Stories_Social_Media)
+
+#Nationalistic Defenders ####
+
+#nat_def <- CAB_data_dem[
+#  CAB_data_dem$participate_rally_n == 1 , CAB_data_dem$participate_meeting == 1, CAB_data_dem$participate_member ==1,
+#]
+national_defenders = cbind(CAB_data_dem$system_capable_n_sc,
+                           CAB_data_dem$system_proud_n_sc,
+                           CAB_data_dem$system_deserves_n_sc,
+                           CAB_data_dem$system_live_n_sc,
+                           CAB_data_dem$sm_engage_supportive_sc,
+                           CAB_data_dem$sm_critical_local_n_sc,
+                           CAB_data_dem$sm_critical_central_n_sc,
+                           CAB_data_dem$sm_positive_local_n_sc,
+                           CAB_data_dem$sm_positive_central_n_sc,
+                           CAB_data_dem$trust_central_n_sc,
+                           CAB_data_dem$trust_local_n_sc,
+                           CAB_data_dem$democracy_protests_n_sc)
+cronbach(national_defenders)
+
+
