@@ -309,4 +309,18 @@ national_defenders = cbind(CAB_data_dem$system_capable_n_sc,
                            CAB_data_dem$democracy_protests_n_sc)
 cronbach(national_defenders)
 
-
+library(scales)
+CAB_data_dem$national_defenders = rescale(cbind(CAB_data_dem$system_capable_n_sc +
+                           CAB_data_dem$system_proud_n_sc +
+                           CAB_data_dem$system_deserves_n_sc +
+                           CAB_data_dem$system_live_n_sc +
+                           CAB_data_dem$sm_engage_supportive_sc +
+                           CAB_data_dem$sm_critical_local_n_sc +
+                           CAB_data_dem$sm_critical_central_n_sc +
+                           CAB_data_dem$sm_positive_local_n_sc +
+                           CAB_data_dem$sm_positive_central_n_sc +
+                           CAB_data_dem$trust_central_n_sc +
+                           CAB_data_dem$trust_local_n_sc +
+                           CAB_data_dem$democracy_protests_n_sc), to = c(0, 1))
+hist(CAB_data_dem$national_defenders)
+CAB_data_dem$national_defenders = rescale(cbind(CAB_data_dem$system_capable_n_sc +
