@@ -27,32 +27,33 @@ table(CAB_data_dem$env_issues)
 
 
 #Social Media Warriors Index####
-# Subsetting the data to include only the rows where participate_rally_n and participate_protest_n are equal to 1
+# Subsetting the data to include only the rows where participate_rally_n and participate_protest_n etc. are equal to 2
 sm_war_filter <- CAB_data_dem[
-  CAB_data_dem$participate_rally_valid == 2 & CAB_data_dem$participate_protest_valid == 2 & CAB_data_dem$participate_meeting_valid == 2 &
-    CAB_data_dem$participate_volunteer_valid == 2 & CAB_data_dem$participate_member_valid == 2 & CAB_data_dem$participate_contact_valid == 2 & 
-    CAB_data_dem$participate_vote_valid == 2,
+  CAB_data_dem$participate_rally_n == 2 & CAB_data_dem$participate_protest_n == 2 & CAB_data_dem$participate_meeting_n == 2 &
+    CAB_data_dem$participate_volunteer_n == 2 & CAB_data_dem$participate_member_n == 2 & CAB_data_dem$participate_contact_n == 2 & 
+    CAB_data_dem$participate_vote_n == 2,
 ]
 
 # Now create the sm_warriors matrix using the filtered data
 sm_warriors <- cbind(
   sm_war_filter$sm_engage_critical_n_sc,
-  sm_war_filter$sm_engage_friends_n_sc,
+  #sm_war_filter$sm_engage_friends_n_sc,
   sm_war_filter$sm_engage_groups_n_sc,
   sm_war_filter$sm_engage_post_n_sc
 )
 
+library(psy)
 # Calculating the Cronbach's alpha for sm_warriors
 cronbach(sm_warriors)
 
-
+library(scales)
 # Dillusioned Reformists Index ######
-CAB_data_dem$system_capable_rescaled = rescale(CAB_data_dem$system_capable_n_sc, to = c(0, 1))
+CAB_data_dem$system_capable_rescaled = scales::rescale(CAB_data_dem$system_capable_n_sc, to = c(0, 1))
+CAB_data_dem$sm_engage_critical_n_sc = scales::rescale(CAB_data_dem$sm_engage_critical_n_sc, to = c(0, 1))
 
 dil_ref_filter <- CAB_data_dem[
   CAB_data_dem$participate_rally_n == 1 ,
 ]
-
 
 dil_ref = cbind(
   dil_ref_filter$sm_engage_critical_n_sc,
@@ -144,11 +145,11 @@ idconsisten_conserv = cbind(
   ide_con_filter$system_capable_n_sc,
   ide_con_filter$system_proud_n_sc,
   ide_con_filter$trust_state_n_sc,
-  # ide_con_filter$system_deserves_n_sc,
-  # ide_con_filter$system_live_n_sc,
-  # ide_con_filter$trust_US_negative,
-  # ide_con_filter$trust_china_n_sc,
-  # ide_con_filter$trust_russia_n_sc,
-  # ide_con_filter$trust_EU_negative,
+  ide_con_filter$system_deserves_n_sc,
+  ide_con_filter$system_live_n_sc,
+  ide_con_filter$trust_US_negative,
+  ide_con_filter$trust_china_n_sc,
+  ide_con_filter$trust_russia_n_sc,
+  ide_con_filter$trust_EU_negative,
   ide_con_filter$pol_news_tv_n_sc)
 cronbach(idconsisten_conserv)
