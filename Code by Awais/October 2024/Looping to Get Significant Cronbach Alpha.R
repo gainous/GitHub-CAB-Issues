@@ -32,25 +32,24 @@ find_all_alpha_above_threshold <- function(data, threshold = 0.5) {
 
 # Create your data frame with the relevant columns
 test <- data.frame(
-    a = CAB_data_dem$pol_dis,
-    # b = CAB_data_dem$trust_central_silob,
-    c = CAB_data_dem$trust_local_silob,
-    d = CAB_data_dem$sm_critical_local_n_sc,
-    e = CAB_data_dem$sm_critical_central_n_sc,
-    f = CAB_data_dem$sm_disagreement_politics_silob,
-    g = CAB_data_dem$sm_engage_friends_silob,
-    h = CAB_data_dem$sm_engage_groups_silob,
-    i = CAB_data_dem$sm_engage_post_silob,
-    j = CAB_data_dem$sm_engage_critical_silob,
-    k = CAB_data_dem$sm_engage_supportive_silob,
-    l = CAB_data_dem$sm_engage_offline_silob)
-library(psy)
-  # Calculating the Cronbach's alpha for sm_warriors
+  CAB_data_dem$pol_dis_silob,
+  CAB_data_dem$trust_central_silob,
+  CAB_data_dem$trust_local_silob,
+  CAB_data_dem$sm_disagreement_politics_silob,
+  CAB_data_dem$sm_engage_friends_silob,
+  CAB_data_dem$sm_engage_groups_silob,
+  CAB_data_dem$sm_engage_post_silob,
+  CAB_data_dem$sm_engage_critical_silob,
+  CAB_data_dem$sm_engage_supportive_silob,
+  CAB_data_dem$sm_engage_offline_silob,
+  CAB_data_dem$participate_rally_sil_obs)
+
+# Calculating the Cronbach's alpha for sm_warriors
   cronbach(test)
 
 
 # Run the function to find all combinations with Cronbach's alpha greater than 0.5
-result <- find_all_alpha_above_threshold(test, threshold = 0.5)
+result <- find_all_alpha_above_threshold(test, threshold = 0.6)
 
 # Display all qualifying combinations and their Cronbach's alpha values
 if (is.list(result)) {
