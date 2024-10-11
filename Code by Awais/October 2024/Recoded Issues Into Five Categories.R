@@ -324,3 +324,35 @@ CAB_data_dem$national_defenders = rescale(cbind(CAB_data_dem$system_capable_n_sc
                            CAB_data_dem$democracy_protests_n_sc), to = c(0, 1))
 hist(CAB_data_dem$national_defenders)
 CAB_data_dem$national_defenders = rescale(cbind(CAB_data_dem$system_capable_n_sc +
+hist(asian.barometer$q9)
+
+#Index Construction##########################################
+#Algorithm Driven Index
+library(psy)
+algorithm_matrix = cbind(
+  CAB_data_merge$tiktok_n_sc,
+  CAB_data_merge$twitter_n_sc,
+  CAB_data_merge$instagram_n_sc)
+cronbach(algorithm_matrix)
+
+CAB_data_merge$algorithm_index = rescale((
+  CAB_data_merge$tiktok_n_sc +
+    CAB_data_merge$twitter_n_sc +
+    CAB_data_merge$instagram_n_sc), to = c(0, 1))
+summary(CAB_data_merge$algorithm_index)
+
+#For footnote highlighting why Instagram can be counted as algorithm-driven
+cor.test(CAB_data_merge$instagram_n_sc,CAB_data_merge$tiktok_n_sc)
+
+social_network_matrix = cbind(
+  CAB_data_merge$facebook_n_sc,
+  CAB_data_merge$vkontakte_n_sc)
+cronbach(social_network_matrix)
+
+#Use cor.test here instead because it's only two variables
+cor.test(CAB_data_merge$facebook_n_sc,CAB_data_merge$vkontakte_n_sc)
+
+CAB_data_merge$social_network_index = rescale((
+  CAB_data_merge$facebook_n_sc +
+    CAB_data_merge$vkontakte_n_sc), to = c(0, 1))
+summary(CAB_data_merge$social_network_index)
