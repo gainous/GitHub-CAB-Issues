@@ -80,9 +80,6 @@ CAB_data_dem$national_defenders_index <- rescale(
 )
 
 
-#To make a character variables into numeric#
-CAB_data_dem$participate_rally_dilref <- as.numeric(as.character(CAB_data_dem$participate_rally_dilref))
-
 
 # Recoding Political Disucssion with Family and Friends #
 CAB_data_dem$pol_dis <- as.numeric(CAB_data_dem$pol_discuss)
@@ -427,30 +424,21 @@ CAB_data_dem$socnetdriven_sm_index <- rescale(
 
 west_src_pol_events = cbind(
   CAB_data_dem$pol_news_facebook_n_sc,
-  CAB_data_dem$pol_news_twitter_n_sc,
-  CAB_data_dem$pol_news_tiktok_n_sc)
+  CAB_data_dem$pol_news_twitter_n_sc)
+  # CAB_data_dem$pol_news_tiktok_n_sc)
 cronbach(west_src_pol_events)
 
 CAB_data_dem$west_src_pol_events <- rescale(
   CAB_data_dem$pol_news_facebook_n_sc +
-  CAB_data_dem$pol_news_twitter_n_sc + 
-  CAB_data_dem$pol_news_tiktok_n_sc,
-  to = c(1, 0)
+  CAB_data_dem$pol_news_twitter_n_sc, to = c(1, 0)
 )
 
-#Non-Western Sources for News about Political Event###
-CAB_data_dem$nonwestern_src_pol_news <- rescale(
-  CAB_data_dem$pol_news_tv_n_sc +
-    CAB_data_dem$pol_news_vkontakte_n_sc + 
-    CAB_data_dem$pol_news_odnoklassniki_n_sc,
-  to = c(1, 0)
-)
+
 
 #Legacy Sources for News about Political Event###
-CAB_data_dem$pol_news_tv_n_s
 
 #Digital Sources for News about Political Event###
-CAB_data_dem$digital_src_pol_news <- rescale(
+digital_src_pol_news <- rescale(
   CAB_data_dem$pol_news_facebook_n_sc +
     CAB_data_dem$pol_news_twitter_n_sc + 
     CAB_data_dem$pol_news_tiktok_n_sc + 
@@ -462,14 +450,14 @@ CAB_data_dem$digital_src_pol_news <- rescale(
 
 library(scales)
 #Trust on Legacy Media#
-CAB_data_dem$trust_legacy <- rescale(
+trust_legacy <- rescale(
     CAB_data_dem$trust_state_n_sc +
     CAB_data_dem$trust_russian_media_n_sc,
   to = c(1, 0)
 )
 
 #Trust on Western Media#
-CAB_data_dem$trust_western_n_sc
+trust_western_n_sc = CAB_data_dem$trust_western_n_sc
 
 #Trust on Russian Media#
 CAB_data_dem$trust_russia_both <- rescale(
@@ -500,17 +488,9 @@ cynics <- cbind(
   1 - CAB_data_dem$trust_state_n_sc
 )
 cronbach(cynics)
+# Institutional Believers Index (High trust) - Reverse of Cynics
 
 
-
-# Institutional Believers Index (High trust)
-institutional_believers <- cbind(
-  CAB_data_dem$trust_central_n_sc,
-  CAB_data_dem$trust_local_n_sc,
-  CAB_data_dem$trust_state_n_sc
-)
-
-cronbach(institutional_believers)
 
 
 
