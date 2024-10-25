@@ -30,7 +30,6 @@ table(CAB_data_dem$env_issues)
 
 
 #Nationalistic Defenders ####
-detach("package:psych", unload = TRUE, character.only = TRUE)
 library(scales)
 CAB_data_dem$participate_rally_nat_def = rescale(CAB_data_dem$participate_rally_n, to = c(1, 0)) # 1 means yes
 CAB_data_dem$participate_meeting_nat_def = rescale(CAB_data_dem$participate_meeting_n, to = c(1, 0)) # 1 means yes
@@ -57,7 +56,7 @@ national_defenders = cbind(CAB_data_dem$system_capable_n_sc,
 library(psy)
 cronbach(national_defenders)
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
+
 library(scales)
 #creating an index of national defenders####
 CAB_data_dem$national_defenders_index <- rescale(
@@ -78,13 +77,13 @@ CAB_data_dem$national_defenders_index <- rescale(
     CAB_data_dem$participate_member_nat_def,
   to = c(0, 1)
 )
-
-
+summary(CAB_data_dem$national_defenders_index)
+hist(CAB_data_dem$national_defenders_index)
 
 # Recoding Political Disucssion with Family and Friends #
 CAB_data_dem$pol_dis <- as.numeric(CAB_data_dem$pol_discuss)
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
+
 library(scales)
 # Step 5: Rescale the numeric values to the desired direction
 CAB_data_dem$pol_dis_silob <- rescale(CAB_data_dem$pol_discuss_n, to = c(0, 1)) #1 means less
@@ -117,18 +116,17 @@ cronbach(sil_obs)
 
 #sclae if item deleted
 #install.packages('psych')
-library(psych)
-alpha(sil_obs)
+
 
 
 #if some items are negatively correlated
 #alpha(sil_obs, check.keys = TRUE)
 
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
+
 library(scales)
 ###Creating an index of "silent observers"##
-CAB_data_dem$sil_obs_index <- rescale(
+CAB_data_dem$sil_obs_index <- scales::rescale(
   CAB_data_dem$pol_dis_silob +
     # CAB_data_dem$trust_central_silob +
     # CAB_data_dem$trust_local_silob +
@@ -142,8 +140,9 @@ CAB_data_dem$sil_obs_index <- rescale(
     CAB_data_dem$participate_rally_sil_obs,
   to = c(0, 1)
 )
+summary(CAB_data_dem$sil_obs_index)
+hist(CAB_data_dem$sil_obs_index)
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
 library(scales)
 #Recoding for SM Warriors#
 CAB_data_dem$participate_rally_smw =  rescale(CAB_data_dem$participate_rally_n, to = c(0, 1))   # 1 means No
@@ -189,12 +188,11 @@ sm_warriors <- cbind(
   # CAB_data_dem$participate_vote_smw)
 
 cronbach(sm_warriors)
-alpha(sm_warriors)
 
 
 
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
+
 library(scales)
 # Creating an Index
 CAB_data_dem$smwar_index = rescale(
@@ -211,6 +209,9 @@ CAB_data_dem$smwar_index = rescale(
   # CAB_data_dem$participate_vote_smw, 
   to = c(0, 1)  # Rescale to range [0, 1]
 )
+
+summary(CAB_data_dem$smwar_index)
+hist(CAB_data_dem$smwar_index)
 
 # # Dillusioned Reformists Index ######
 # library(scales)
@@ -240,7 +241,7 @@ CAB_data_dem$smwar_index = rescale(
 #   to = c(0, 1)
 # )
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
+
 library(scales)
 # Ideologically Consistent Conservatives Index ####
 CAB_data_dem$trust_US_negative =  rescale(CAB_data_dem$trust_US_n, to = c(0, 1)) # 1 means not at all
@@ -260,9 +261,8 @@ idconsisten_conserv = cbind(
   CAB_data_dem$trust_EU_negative,
   CAB_data_dem$pol_news_tv_n_sc)
 cronbach(idconsisten_conserv)
-hist(idconsisten_conserv)
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
+
 library(scales)
 #Creating an index of ideologically consistent conservative index###
 CAB_data_dem$idconsisten_conserv_index <- rescale(
@@ -281,7 +281,8 @@ CAB_data_dem$idconsisten_conserv_index <- rescale(
   to = c(0, 1)
 )
 
-
+summary(CAB_data_dem$idconsisten_conserv_index)
+hist(CAB_data_dem$idconsisten_conserv_index)
 
 #Surveillance-Averse Libertarians####
 CAB_data_dem$tracking_central_sur_ave_lib =  rescale(CAB_data_dem$tracking_central_n, to = c(1, 0)) #1 means not comfortable at all
@@ -313,6 +314,8 @@ CAB_data_dem$surv_averse_lib_index <- rescale(
     # CAB_data_dem$trust_western_n_sc,
   to = c(0, 1)
 )
+summary(CAB_data_dem$surv_averse_lib_index)
+hist(CAB_data_dem$surv_averse_lib_index)
 
 # Polarized Echo Chamber ####
 polarized_echo_chamber = cbind(
@@ -324,13 +327,12 @@ polarized_echo_chamber = cbind(
   CAB_data_dem$sm_disagreement_news_n_sc,
   CAB_data_dem$sm_disagreement_issues_n_sc)
 cronbach(polarized_echo_chamber)
-library(psych)
-alpha(polarized_echo_chamber)
-alpha(polarized_echo_chamber, check.keys = TRUE)
+
+
+library(Rcmdr)
 
 
 
-detach("package:psych", unload = TRUE, character.only = TRUE)
 #create an index of  Polarized Echo Chamber#
 CAB_data_dem$polarized_echo_chamber_index <- rescale(
   CAB_data_dem$avoidance_unfriending_n_sc +
@@ -505,5 +507,18 @@ optimists <- cbind(
 
 cronbach(optimists)
 
+cor(CAB_data_dem[,c("pol_issues","national_defenders_index","sil_obs_index","surv_averse_lib_index","smwar_index",
+                    "idconsisten_conserv_index")], 
+    use="complete",)
 
+library(Hmisc, pos=19)
+rcorr.adjust(CAB_data_dem[,c("env_issues","national_defenders_index","sil_obs_index","surv_averse_lib_index","smwar_index",
+                             "idconsisten_conserv_index")], type="pearson", use="complete")
+
+table(CAB_data_dem$pol_issues)
+table(CAB_data_dem$eco_issues)
+table(CAB_data_dem$soc_issues)
+table(CAB_data_dem$sec_issues)
+table(CAB_data_dem$sec_issues)
+table(CAB_data_dem$env_issues)
 
