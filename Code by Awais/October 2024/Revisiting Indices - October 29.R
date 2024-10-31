@@ -116,67 +116,67 @@ summary(CAB_data_dem$critical_tv_index)
 
 #Social Media Exposure for Political News
 sm_pol_news = rescale(
-  CAB_data_dem$pol_news_facebook_n_sc +
-  CAB_data_dem$pol_news_vkontakte_n_sc +
-  CAB_data_dem$pol_news_tiktok_n_sc +
-  CAB_data_dem$pol_news_twitter_n_sc +
+  CAB_data_dem$pol_news_facebook_sm_no_n +
+  CAB_data_dem$pol_news_vkontakte_sm_no_n +
+  CAB_data_dem$pol_news_tiktok_sm_no_n +
+  CAB_data_dem$pol_news_twitter_sm_no_n +
   CAB_data_dem$pol_news_odnoklassniki_n_sc,
   to = c(1, 0)
 )
 
 #Positive SM Media
 sm_positive = rescale(
-  CAB_data_dem$sm_positive_local_n_sc +
-  CAB_data_dem$sm_positive_central_n_sc,
+  CAB_data_dem$sm_positive_local_from_sm_no_n +
+  CAB_data_dem$sm_positive_central_from_sm_no_n,
   to = c(1, 0)
 )
 
 
 #Social Media Engagement Index##
 sm_engage_index = cbind(
-  CAB_data_dem$sm_engage_friends_n_sc,
-  CAB_data_dem$sm_engage_groups_n_sc,
-  CAB_data_dem$sm_engage_post_n_sc,
-  CAB_data_dem$sm_engage_critical_n_sc,
-  CAB_data_dem$sm_engage_supportive_sc,
-  CAB_data_dem$sm_engage_offline_sc)
+  CAB_data_dem$sm_engage_friends_from_sm_no_n,
+  CAB_data_dem$sm_engage_groups_from_sm_no_n,
+  CAB_data_dem$sm_engage_post_from_sm_no_n,
+  CAB_data_dem$sm_engage_critical_from_sm_no_n,
+  CAB_data_dem$sm_engage_supportive_from_sm_no_n,
+  CAB_data_dem$sm_engage_offline_from_sm_no_n)
 cronbach(sm_engage_index)
 
 sm_engage_index = rescale(
-  CAB_data_dem$sm_engage_friends_n_sc + 
-  CAB_data_dem$sm_engage_groups_n_sc +
-  CAB_data_dem$sm_engage_post_n_sc +
-  CAB_data_dem$sm_engage_critical_n_sc +
-  CAB_data_dem$sm_engage_supportive_sc +
-  CAB_data_dem$sm_engage_offline_sc,
+  CAB_data_dem$sm_engage_friends_from_sm_no_n +
+  CAB_data_dem$sm_engage_groups_from_sm_no_n +
+  CAB_data_dem$sm_engage_post_from_sm_no_n +
+  CAB_data_dem$sm_engage_critical_from_sm_no_n +
+  CAB_data_dem$sm_engage_supportive_from_sm_no_n +
+  CAB_data_dem$sm_engage_offline_from_sm_no_n,
   to = c(1, 0)
 )
 
 #Digital Sources for Political News###
 digital_src_pol_news <- rescale(
-  CAB_data_dem$pol_news_facebook_n_sc +
-    CAB_data_dem$pol_news_twitter_n_sc + 
-    CAB_data_dem$pol_news_tiktok_n_sc + 
-    CAB_data_dem$pol_news_vkontakte_n_sc +
+  CAB_data_dem$pol_news_facebook_sm_no_n +
+    CAB_data_dem$pol_news_twitter_sm_no_n + 
+    CAB_data_dem$pol_news_tiktok_sm_no_n + 
+    CAB_data_dem$pol_news_vkontakte_sm_no_n +
     CAB_data_dem$pol_news_odnoklassniki_n_sc,
   to = c(1, 0)
 )
 
 #General Social Media Index
 gen_sm_index = cbind(
-  CAB_data_dem$facebook_n_sc,
-  CAB_data_dem$vkontakte_n_sc,
-  CAB_data_dem$instagram_n_sc,
-  CAB_data_dem$tiktok_n_sc,
-  CAB_data_dem$twitter_n_sc)
+  CAB_data_dem$facebook_sm_no_n,
+  CAB_data_dem$vkontakte_sm_no_n,
+  CAB_data_dem$instagram_sm_no_n,
+  CAB_data_dem$tiktok_sm_no_n,
+  CAB_data_dem$twitter_sm_no_n)
 cronbach(gen_sm_index)
 
 gen_sm_index <- rescale(
-  CAB_data_dem$facebook_n_sc +
-  CAB_data_dem$vkontakte_n_sc +
-  CAB_data_dem$instagram_n_sc +
-  CAB_data_dem$tiktok_n_sc +
-  CAB_data_dem$twitter_n_sc,
+  CAB_data_dem$facebook_sm_no_n +
+  CAB_data_dem$vkontakte_sm_no_n +
+  CAB_data_dem$instagram_sm_no_n +
+  CAB_data_dem$tiktok_sm_no_n +
+  CAB_data_dem$twitter_sm_no_n,
   to = c(0, 1)
 )
 
@@ -193,37 +193,37 @@ trust_western_n_sc = CAB_data_dem$trust_western_n_sc
 
 #Trust on Russian Media#
 trust_russia_both <- rescale(
-  CAB_data_dem$trust_vkontakte_n_sc +
+  CAB_data_dem$trust_vkontakte_sm_no_n +
     CAB_data_dem$trust_russian_media_n_sc,
   to = c(1, 0)
 )
 
 #Algorithm-Driven Social Media Index ###
 algdriven_sm_index <- rescale(
-  CAB_data_dem$instagram_n_sc +
-    CAB_data_dem$tiktok_n_sc +
-    CAB_data_dem$twitter_n_sc,
+  CAB_data_dem$instagram_sm_no_n +
+    CAB_data_dem$tiktok_sm_no_n +
+    CAB_data_dem$twitter_sm_no_n,
   to = c(0, 1)
 )
 
 
 #Social Network Driven SM Index###
 CAB_data_dem$socnetdriven_sm_index <- rescale(
-  CAB_data_dem$facebook_n_sc +
-    CAB_data_dem$vkontakte_n_sc,
+  CAB_data_dem$facebook_sm_no_n +
+    CAB_data_dem$vkontakte_sm_no_n,
   to = c(0, 1)
 )
 
 #Western Political News
 west_src_pol_events = cbind(
-  CAB_data_dem$pol_news_facebook_n_sc,
-  CAB_data_dem$pol_news_twitter_n_sc)
-# CAB_data_dem$pol_news_tiktok_n_sc)
+  CAB_data_dem$pol_news_facebook_sm_no_n,
+  CAB_data_dem$pol_news_twitter_sm_no_n)
+# CAB_data_dem$pol_news_tiktok_sm_no_n)
 cronbach(west_src_pol_events)
 
 west_src_pol_events <- rescale(
-  CAB_data_dem$pol_news_facebook_n_sc +
-    CAB_data_dem$pol_news_twitter_n_sc, to = c(1, 0)
+  CAB_data_dem$pol_news_facebook_sm_no_n +
+    CAB_data_dem$pol_news_twitter_sm_no_n, to = c(1, 0)
 )
 
 ##############################################
@@ -331,7 +331,7 @@ CAB_data_dem$surv_averse_lib_index <- rescale(
 
 
 
-facebook_n_sc + instagram_n_sc + twitter_n_sc + vkontakte_n_sc + 
+facebook_sm_no_n + instagram_sm_no_n + twitter_sm_no_n + vkontakte_sm_no_n + 
   age_n_sc + gender_Male + urbanicity_City + edu_n_sc + inc_n_sc
 
 mod1 = lm()
