@@ -1,0 +1,82 @@
+# Install necessary packages if not already installed
+# install.packages("officer")
+# install.packages("flextable")
+# install.packages("magrittr")  # For the pipe operator if needed
+
+library(officer)    # For creating Word documents
+library(flextable)  # For formatting tables in Word
+library(magrittr)   # For pipe (%>%) operator
+
+models <- list()              # To store the fitted models
+significant_results <- list()  # To store significant results (p-values < 0.05)
+significance_level <- 0.05     # Define the threshold for significance
+
+for (dep_var in dependent_vars) {
+  formula <- as.formula(paste(dep_var, "~ vpn_use_Yes + facebook_n_sc + instagram_n_sc + twitter_n_sc + )
+
+  # Fit the model and store it
+model <- glm(formula, data = CAB_data_dem, family = binomial)
+models[[dep_var]] <- model
+  
+  # Extract the coefficients and p-values
+  model_summary <- summary(model)$coefficients
+  p_values <- model_summary[, "Pr(>|z|)"]
+  
+# Filter significant results (p-values < 0.05)
+  significant <- model_summary[p_values < significance_level, , drop = FALSE]
+  
+  # Store significant results if any exist
+  if (nrow(significant) > 0) {
+    significant_results[[dep_var]] <- significant
+  }
+}
+
+# Prepare a data frame to hold the final results
+significant_df <- data.frame(
+  Dependent_Variable = character(),
+  Predictor = character(),
+  Estimate = numeric(),
+  Std_Error = numeric(),
+  Z_value = numeric(),
+  P_value = numeric(),
+  Significance = character(),
+  stringsAsFactors = FALSE
+)
+
+# Loop through the significant results and add them to the data frame
+for (dep_var in names(significant_results)) {
+  sig_data <- significant_results[[dep_var]]
+  for (i in 1:nrow(sig_data)) {
+    # Add significance symbols: *** for p < 0.001, ** for p < 0.01, * for p < 0.05
+    sig_symbol <- ifelse(sig_data[i, "Pr(>|z|)"] < 0.001, "***",
+                         ifelse(sig_data[i, "Pr(>|z|)"] < 0.01, "**",
+                                ifelse(sig_data[i, "Pr(>|z|)"] < 0.05, "*", "")))
+    
+    # Add the significant result to the final dataframe
+    significant_df <- rbind(
+      significant_df,
+      data.frame(
+        Dependent_Variable = dep_var,
+        Predictor = rownames(sig_data)[i],
+        Estimate = sig_data[i, "Estimate"],
+        Std_Error = sig_data[i, "Std. Error"],
+        Z_value = sig_data[i, "z value"],
+        P_value = sig_data[i, "Pr(>|z|)"],
+        Significance = sig_symbol,
+        stringsAsFactors = FALSE
+      )
+    )
+  }
+}
+
+# Create a Word document and add the table
+doc <- read_docx()  # Initialize a new Word document
+doc <- doc %>%
+  body_add_par("Significant Predictors with p-values < 0.05", style = "heading 1") %>%
+  body_add_flextable(flextable(significant_df))  # Add the table to the document
+
+# Save the Word document
+print(doc, target = "significant_results.docx")
+
+cat("Word document with significant results has been created: 'significant_results.docx'")
+
