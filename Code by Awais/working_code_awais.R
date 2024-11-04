@@ -130,11 +130,11 @@ hist(CAB_data_dem$surv_averse_lib_index)
 
 
 
-
+names(CAB_data_dem)
 
 # List of social media platforms and corresponding variables
 platforms <- c("facebook_n_sc", "vkontakte_n_sc", "instagram_n_sc", "tiktok_n_sc", "twitter_n_sc", "youtube_n_sc", "whatsapp_n_sc", "telegram_n_sc")
-variables <- c("q23_a", "q23_b", "q23_c", "q23_d", "q23_e", "q23_f", "q23_g", "q23_h")
+variables <- c("facebook_n", "vkontakte_n", "instagram_n", "tiktok_n", "twitter_n", "youtube_n", "whatsapp_n", "telegram_n")
 
 library(dplyr)
 # Loop over each platform and create numeric versions of each social media usage variable
@@ -160,7 +160,14 @@ for (platform in platforms) {
   print(summary(CAB_data_dem[[paste0(platform, "_1sm_no")]]))
 }
 
+table(CAB_data_dem$q23_a)
+table(CAB_data_dem$q22)
+table(CAB_data_dem$facebook_n_sc_1sm_no)
+table(CAB_data_dem$facebook_n)
 
+library(scales)
+CAB_data_dem$xxx = rescale(CAB_data_dem$q, to = c(0,1))
+table(CAB_data_dem$xxx)
 
 library(psy)
 ##General Social Media Index####
@@ -309,26 +316,68 @@ for (i in seq_along(variables)) {
     )
 }
 
-# Rescale the new numeric columns to range 0-1
+
+#This is the Code that Works
+
+# Create new variables combining the 0 values from set 1 and set 2
 CAB_data_dem <- CAB_data_dem %>%
   mutate(
-    across(ends_with("_3sm_no"), ~ scales::rescale(., to = c(0, 1)))
+    pol_news_facebook_n_sc_combined = ifelse(facebook_n_sc_1sm_no == 0, 0, pol_news_facebook_n_sc),
+    pol_news_vkontakte_n_sc_combined = ifelse(vkontakte_n_sc_1sm_no == 0, 0, pol_news_vkontakte_n_sc),
+    pol_news_tiktok_n_sc_combined = ifelse(tiktok_n_sc_1sm_no == 0, 0, pol_news_tiktok_n_sc),
+    pol_news_twitter_n_sc_combined = ifelse(twitter_n_sc_1sm_no == 0, 0, pol_news_twitter_n_sc)
   )
-table(CAB_data_dem$q38_a)
-table(CAB_data_dem$sm_engage_friends_n_sc_3sm_no)
 
+table(CAB_data_dem$facebook_n_sc_combined)
 
-# Display summaries for verification
-for (platform in platforms) {
-  print(paste0("Summary for ", platform, " (numeric):"))
-  print(summary(CAB_data_dem[[paste0(platform, "_3sm_no")]]))
+table(CAB_data_dem$trust_facebook_n_sc)
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(
+    trust_facebook_n_sc_combined = ifelse(facebook_n_sc_1sm_no == 0, 0, trust_facebook_n_sc),
+    trust_vkontakte_n_sc_combined = ifelse(vkontakte_n_sc_1sm_no == 0, 0, trust_vkontakte_n_sc)
+  )
+
+table(CAB_data_dem$trust_facebook_n_sc_combined)
+
+# List of social media platforms and corresponding variables
+table(CAB_data_dem$sm_critical_central_n_sc)
+platforms1 <- c("sm_critical_central_n_sc", "sm_critical_local_n_sc")
+variables1 <- c("sm_critical_central_n_sc", "sm_critical_local_n_sc")
+
+library(dplyr)
+# Loop over each platform and create numeric versions of each social media usage variable
+for (i in seq_along(variables1)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(platforms1[i], "_sm_no") := case_when(
+        q22 == 2 ~ 0,       # Set to 0 if q22 is 2
+        TRUE ~ as.numeric(.data[[variables1[i]]])  # Use the corresponding variable
+      )
+    )
 }
 
-sm_engage_index = cbind(
-  CAB_data_dem$sm_engage_friends_from_sm_no_n,
-  CAB_data_dem$sm_engage_groups_from_sm_no_n,
-  CAB_data_dem$sm_engage_post_from_sm_no_n,
-  CAB_data_dem$sm_engage_critical_from_sm_no_n,
-  CAB_data_dem$sm_engage_supportive_from_sm_no_n,
-  CAB_data_dem$sm_engage_offline_from_sm_no_n)
-cronbach(sm_engage_index)
+table(CAB_data_dem$sm_critical_central_n_sc_sm_no)
+table(CAB_data_dem$sm_critical_local_n_sc_sm_no)
+
+# List of social media platforms and corresponding variables
+table(CAB_data_dem$sm_positive_central_n_sc)
+platforms2 <- c("sm_positive_central_n_sc", "sm_positive_local_n_sc")
+variables2 <- c("sm_positive_central_n_sc", "sm_positive_local_n_sc")
+
+library(dplyr)
+# Loop over each platform and create numeric versions of each social media usage variable
+for (i in seq_along(variables2)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(platforms2[i], "_sm_no") := case_when(
+        q22 == 2 ~ 0,       # Set to 0 if q22 is 2
+        TRUE ~ as.numeric(.data[[variables2[i]]])  # Use the corresponding variable
+      )
+    )
+}
+
+table(CAB_data_dem$sm_positive_central_n_sc_sm_no)
+table(CAB_data_dem$sm_positive_local_n_sc_sm_no)
+
+
+
