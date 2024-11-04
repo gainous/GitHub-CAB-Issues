@@ -28,7 +28,6 @@ CAB_data_dem$env_issues <- ifelse(CAB_data_dem$q13_a %in% c(8, 16) | CAB_data_de
 table(CAB_data_dem$env_issues)
 
 
-#Indies Without SM Variables ####
 ##National Deferenders ####
 CAB_data_dem$participate_rally_nat_def = rescale(CAB_data_dem$participate_rally_n, to = c(1, 0)) # 1 means yes
 CAB_data_dem$participate_meeting_nat_def = rescale(CAB_data_dem$participate_meeting_n, to = c(1, 0)) # 1 means yes
@@ -132,13 +131,12 @@ hist(CAB_data_dem$surv_averse_lib_index)
 
 
 
-#Indices with SM Variables####
-#List of all social media variables while taking into account q22=0
 
 # List of social media platforms and corresponding variables
 platforms <- c("facebook_n_sc", "vkontakte_n_sc", "instagram_n_sc", "tiktok_n_sc", "twitter_n_sc", "youtube_n_sc", "whatsapp_n_sc", "telegram_n_sc")
 variables <- c("q23_a", "q23_b", "q23_c", "q23_d", "q23_e", "q23_f", "q23_g", "q23_h")
 
+library(dplyr)
 # Loop over each platform and create numeric versions of each social media usage variable
 for (i in seq_along(variables)) {
   CAB_data_dem <- CAB_data_dem %>%
@@ -162,33 +160,175 @@ for (platform in platforms) {
   print(summary(CAB_data_dem[[paste0(platform, "_1sm_no")]]))
 }
 
-table(CAB_data_dem$facebook_n_sc_1sm_no)
 
 
-
-#General Social Media Index
+library(psy)
+##General Social Media Index####
 gen_sm_index = cbind(
   CAB_data_dem$facebook_n_sc_1sm_no,
   CAB_data_dem$vkontakte_n_sc_1sm_no,
   CAB_data_dem$instagram_n_sc_1sm_no,
   CAB_data_dem$tiktok_n_sc_1sm_no,
   CAB_data_dem$twitter_n_sc_1sm_no)
-cronbach(gen_sm_index)
+cronbach(gen_sm_index) #.53
 
-CAB_data_dem$gen_sm_index <- 
-  CAB_data_dem$facebook_sm_no_n +
-  CAB_data_dem$vkontakte_sm_no_n +
-  CAB_data_dem$instagram_sm_no_n +
-  CAB_data_dem$tiktok_sm_no_n +
-  CAB_data_dem$twitter_sm_no_n
-
-CAB_data_dem$gen_sm_index2 <-  rescale(
-  CAB_data_dem$facebook_sm_no_n +
-  CAB_data_dem$vkontakte_sm_no_n +
-  CAB_data_dem$instagram_sm_no_n +
-  CAB_data_dem$tiktok_sm_no_n +
-  CAB_data_dem$twitter_sm_no_n, to = c(0, 1)
+CAB_data_dem$gen_sm_index <-  rescale(
+  CAB_data_dem$facebook_n_sc_1sm_no +
+  CAB_data_dem$vkontakte_n_sc_1sm_no +
+  CAB_data_dem$instagram_n_sc_1sm_no +
+  CAB_data_dem$tiktok_n_sc_1sm_no +
+  CAB_data_dem$twitter_n_sc_1sm_no, 
+  to = c(0, 1)
 )
-table(CAB_data_dem$gen_sm_index)
+hist(CAB_data_dem$gen_sm_index)
 
-table(CAB_data_dem$gen_sm_index2)
+##Algorithm-Driven Social Media Index ####
+CAB_data_dem$algdriven_sm_index <- rescale(
+  CAB_data_dem$instagram_n_sc_1sm_no +
+    CAB_data_dem$tiktok_n_sc_1sm_no +
+    CAB_data_dem$twitter_n_sc_1sm_no,
+  to = c(0, 1)
+)
+hist(CAB_data_dem$algdriven_sm_index)
+
+
+##Social Network Driven SM Index###
+CAB_data_dem$socnetdriven_sm_index <- rescale(
+  CAB_data_dem$facebook_n_sc_1sm_no +
+    CAB_data_dem$vkontakte_n_sc_1sm_no,
+  to = c(0, 1)
+)
+hist(CAB_data_dem$socnetdriven_sm_index)
+
+
+##Trust on Legacy Media####
+CAB_data_dem$trust_legacy <- rescale(
+  CAB_data_dem$trust_state_n_sc +
+    CAB_data_dem$trust_russian_media_n_sc,
+  to = c(0, 1)
+)
+table(CAB_data_dem$trust_legacy)
+
+##Trust on Western Media####
+table(CAB_data_dem$trust_western_n_sc)
+
+
+##Trust on Russian Media####
+CAB_data_dem$trust_russia_both <- rescale(
+  CAB_data_dem$trust_vkontakte_n_sc +
+    CAB_data_dem$trust_russian_media_n_sc,
+  to = c(1, 0)
+)
+
+table(CAB_data_dem$trust_russia_both)
+
+
+
+
+
+##Western Political News####
+west_src_pol_events = cbind(
+  CAB_data_dem$pol_news_facebook_n_sc,
+  CAB_data_dem$pol_news_twitter_n_sc)
+cronbach(west_src_pol_events)
+
+CAB_data_dem$west_src_pol_events <- rescale(
+  CAB_data_dem$pol_news_facebook_n_sc +
+    CAB_data_dem$pol_news_twitter_n_sc, to = c(0, 1)
+)
+
+table(CAB_data_dem$west_src_pol_events)
+
+
+
+
+
+##Critical Social Media Index####
+platforms <- c("sm_critical_local_n_sc", "sm_critical_central_n_sc", "sm_positive_local_n_sc", "sm_positive_central_n_sc")
+variables <- c("sm_critical_local_n_sc", "sm_critical_central_n_sc", "sm_positive_local_n_sc", "sm_positive_central_n_sc")
+
+library(dplyr)
+# Loop over each platform and create numeric versions of each social media usage variable
+for (i in seq_along(variables)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(platforms[i], "_2sm_no") := case_when(
+        q22 == 2 ~ 0,       # Set to 0 if q22 is 2
+        TRUE ~ as.numeric(.data[[variables[i]]])  # Use the corresponding q23_ variable
+      )
+    )
+}
+
+# Rescale the new numeric columns to range 0-1
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(
+    across(ends_with("_2sm_no"), ~ scales::rescale(., to = c(0, 1)))
+  )
+
+# Display summaries for verification
+for (platform in platforms) {
+  print(paste0("Summary for ", platform, " (numeric):"))
+  print(summary(CAB_data_dem[[paste0(platform, "_1sm_no")]]))
+}
+
+
+
+
+CAB_data_dem$critical_social_media = cbind(
+  CAB_data_dem$sm_critical_local_n_sc_2sm_no,
+  CAB_data_dem$sm_critical_central_n_sc_2sm_no)
+library(psy)
+cronbach(CAB_data_dem$critical_social_media)
+
+library(scales)
+CAB_data_dem$critical_social_media = rescale(
+  CAB_data_dem$sm_critical_local_n_sc_2sm_no +
+    CAB_data_dem$sm_critical_central_n_sc_2sm_no,
+  to = c(0,1)
+)
+summary(CAB_data_dem$critical_social_media)
+hist(CAB_data_dem$critical_social_media)
+
+
+
+
+
+##Socail Media Engagement####
+platforms <- c("sm_engage_friends_n_sc", "sm_engage_groups_n_sc", "sm_engage_post_n_sc", "sm_engage_critical_n_sc", "sm_engage_supportive_sc", "sm_engage_offline_sc")
+variables <- c("q38_a", "q38_b", "q38_c", "q38_d", "q38_e")
+
+library(dplyr)
+# Loop over each platform and create numeric versions of each social media usage variable
+for (i in seq_along(variables)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(platforms[i], "_3sm_no") := case_when(
+        q22 == 2 ~ 0,       # Set to 0 if q22 is 2
+        TRUE ~ as.numeric(.data[[variables[i]]])  # Use the corresponding q23_ variable
+      )
+    )
+}
+
+# Rescale the new numeric columns to range 0-1
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(
+    across(ends_with("_3sm_no"), ~ scales::rescale(., to = c(0, 1)))
+  )
+table(CAB_data_dem$q38_a)
+table(CAB_data_dem$sm_engage_friends_n_sc_3sm_no)
+
+
+# Display summaries for verification
+for (platform in platforms) {
+  print(paste0("Summary for ", platform, " (numeric):"))
+  print(summary(CAB_data_dem[[paste0(platform, "_3sm_no")]]))
+}
+
+sm_engage_index = cbind(
+  CAB_data_dem$sm_engage_friends_from_sm_no_n,
+  CAB_data_dem$sm_engage_groups_from_sm_no_n,
+  CAB_data_dem$sm_engage_post_from_sm_no_n,
+  CAB_data_dem$sm_engage_critical_from_sm_no_n,
+  CAB_data_dem$sm_engage_supportive_from_sm_no_n,
+  CAB_data_dem$sm_engage_offline_from_sm_no_n)
+cronbach(sm_engage_index)
