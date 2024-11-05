@@ -1,6 +1,5 @@
 #Script File = GitHub-CAB-Issues\Code by Awais\working_code_awais
-#Data File = > save.image("~/GitHub/GitHub-CAB-Issues/CAB_data.RData")
-
+#> save.image("~/GitHub/GitHub-CAB-Issues/CAB_data.RData")
 
 
 #Recording Issues into Five Overarching Categories####
@@ -27,7 +26,7 @@ table(CAB_data_dem$sec_issues)
 CAB_data_dem$env_issues <- ifelse(CAB_data_dem$q13_a %in% c(8, 16) | CAB_data_dem$q13_b %in% c(8,16), 1, 0)
 table(CAB_data_dem$env_issues)
 
-
+library(scales)
 ##National Deferenders ####
 CAB_data_dem$participate_rally_nat_def = rescale(CAB_data_dem$participate_rally_n, to = c(1, 0)) # 1 means yes
 CAB_data_dem$participate_meeting_nat_def = rescale(CAB_data_dem$participate_meeting_n, to = c(1, 0)) # 1 means yes
@@ -47,7 +46,6 @@ national_defenders= cbind(CAB_data_dem$system_capable_n_sc,
 library(psy)
 cronbach(national_defenders)
 
-
 #creating an index of national defenders#
 CAB_data_dem$national_defenders_index <- rescale(
   CAB_data_dem$system_capable_n_sc +
@@ -63,7 +61,7 @@ CAB_data_dem$national_defenders_index <- rescale(
   to = c(0, 1)
 )
 
-summary(CAB_data_dem$national_defenders)
+summary(CAB_data_dem$national_defenders_index)
 hist(CAB_data_dem$national_defenders_index)
 
 
@@ -86,7 +84,7 @@ idconsisten_conserv = cbind(
   CAB_data_dem$pol_news_tv_n_sc)
 cronbach(idconsisten_conserv)
 
-CAB_data_dem$idconsisten_conserv <- rescale(
+CAB_data_dem$idconsisten_conserv_index <- rescale(
   CAB_data_dem$trust_central_n_sc +
     CAB_data_dem$trust_local_n_sc +
     CAB_data_dem$system_capable_n_sc +
@@ -102,10 +100,10 @@ CAB_data_dem$idconsisten_conserv <- rescale(
   to = c(0, 1)
 )
 
-summary(CAB_data_dem$idconsisten_conserv)
-hist(CAB_data_dem$idconsisten_conserv)
+summary(CAB_data_dem$idconsisten_conserv_index)
+hist(CAB_data_dem$idconsisten_conserv_index)
 
-
+names(CAB_data_dem)
 ##Surveillance-Averse Libertarians####
 CAB_data_dem$tracking_central_sur_ave_lib =  rescale(CAB_data_dem$tracking_central_n, to = c(1, 0)) #1 means not comfortable at all
 CAB_data_dem$tracking_local_sur_ave_lib =  rescale(CAB_data_dem$tracking_local_n, to = c(1, 0)) #1 means not comfortable at all
@@ -128,9 +126,6 @@ CAB_data_dem$surv_averse_lib_index <- rescale(
 summary(CAB_data_dem$surv_averse_lib_index)
 hist(CAB_data_dem$surv_averse_lib_index)
 
-
-
-names(CAB_data_dem)
 
 # List of social media platforms and corresponding variables
 platforms <- c("facebook_n_sc", "vkontakte_n_sc", "instagram_n_sc", "tiktok_n_sc", "twitter_n_sc", "youtube_n_sc", "whatsapp_n_sc", "telegram_n_sc")
@@ -169,6 +164,10 @@ library(scales)
 CAB_data_dem$xxx = rescale(CAB_data_dem$q, to = c(0,1))
 table(CAB_data_dem$xxx)
 
+
+
+
+
 library(psy)
 ##General Social Media Index####
 gen_sm_index = cbind(
@@ -200,13 +199,14 @@ hist(CAB_data_dem$algdriven_sm_index)
 
 
 ##Social Network Driven SM Index###
-CAB_data_dem$socnetdriven_sm_index <- rescale(
+CAB_data_dem$socnet_driven_sm_index <- rescale(
   CAB_data_dem$facebook_n_sc_1sm_no +
     CAB_data_dem$vkontakte_n_sc_1sm_no,
   to = c(0, 1)
 )
-hist(CAB_data_dem$socnetdriven_sm_index)
 
+table(CAB_data_dem$socnet_driven_sm_index)
+hist(CAB_data_dem$socnet_driven_sm_index)
 
 ##Trust on Legacy Media####
 CAB_data_dem$trust_legacy <- rescale(
@@ -214,7 +214,11 @@ CAB_data_dem$trust_legacy <- rescale(
     CAB_data_dem$trust_russian_media_n_sc,
   to = c(0, 1)
 )
+
+table(CAB_data_dem$trust_state_n_sc)
+table(CAB_data_dem$trust_russian_media_n_sc)
 table(CAB_data_dem$trust_legacy)
+
 
 ##Trust on Western Media####
 table(CAB_data_dem$trust_western_n_sc)
@@ -222,7 +226,7 @@ table(CAB_data_dem$trust_western_n_sc)
 
 ##Trust on Russian Media####
 CAB_data_dem$trust_russia_both <- rescale(
-  CAB_data_dem$trust_vkontakte_n_sc +
+  CAB_data_dem$trust_vkontakte_n_sc_combined +
     CAB_data_dem$trust_russian_media_n_sc,
   to = c(1, 0)
 )
@@ -230,14 +234,14 @@ CAB_data_dem$trust_russia_both <- rescale(
 table(CAB_data_dem$trust_russia_both)
 
 
-
+names(CAB_data_dem)
 
 
 ##Western Political News####
 west_src_pol_events = cbind(
-  CAB_data_dem$pol_news_facebook_n_sc,
-  CAB_data_dem$pol_news_twitter_n_sc)
-cronbach(west_src_pol_events)
+  CAB_data_dem$pol_news_facebook_n_sc_combined,
+  CAB_data_dem$pol_news_twitter_n_sc_combined)
+cronbach(west_src_pol_events) #.16
 
 CAB_data_dem$west_src_pol_events <- rescale(
   CAB_data_dem$pol_news_facebook_n_sc +
@@ -245,9 +249,9 @@ CAB_data_dem$west_src_pol_events <- rescale(
 )
 
 table(CAB_data_dem$west_src_pol_events)
+hist(CAB_data_dem$west_src_pol_events)
 
-
-
+names(CAB_data_dem)
 
 
 ##Critical Social Media Index####
@@ -282,15 +286,15 @@ for (platform in platforms) {
 
 
 CAB_data_dem$critical_social_media = cbind(
-  CAB_data_dem$sm_critical_local_n_sc_2sm_no,
-  CAB_data_dem$sm_critical_central_n_sc_2sm_no)
+  CAB_data_dem$sm_critical_local_n_sc_sm_no,
+  CAB_data_dem$sm_critical_central_n_sc_sm_no)
 library(psy)
 cronbach(CAB_data_dem$critical_social_media)
 
 library(scales)
 CAB_data_dem$critical_social_media = rescale(
-  CAB_data_dem$sm_critical_local_n_sc_2sm_no +
-    CAB_data_dem$sm_critical_central_n_sc_2sm_no,
+  CAB_data_dem$sm_critical_local_n_sc_sm_no +
+    CAB_data_dem$sm_critical_central_n_sc_sm_no,
   to = c(0,1)
 )
 summary(CAB_data_dem$critical_social_media)
@@ -318,7 +322,7 @@ for (i in seq_along(variables)) {
 
 
 #This is the Code that Works
-
+library(dplyr)
 # Create new variables combining the 0 values from set 1 and set 2
 CAB_data_dem <- CAB_data_dem %>%
   mutate(
@@ -328,7 +332,6 @@ CAB_data_dem <- CAB_data_dem %>%
     pol_news_twitter_n_sc_combined = ifelse(twitter_n_sc_1sm_no == 0, 0, pol_news_twitter_n_sc)
   )
 
-table(CAB_data_dem$facebook_n_sc_combined)
 
 table(CAB_data_dem$trust_facebook_n_sc)
 CAB_data_dem <- CAB_data_dem %>%
@@ -337,7 +340,7 @@ CAB_data_dem <- CAB_data_dem %>%
     trust_vkontakte_n_sc_combined = ifelse(vkontakte_n_sc_1sm_no == 0, 0, trust_vkontakte_n_sc)
   )
 
-table(CAB_data_dem$trust_facebook_n_sc_combined)
+table(CAB_data_dem$trust_vkontakte_n_sc_combined)
 
 # List of social media platforms and corresponding variables
 table(CAB_data_dem$sm_critical_central_n_sc)
@@ -356,28 +359,92 @@ for (i in seq_along(variables1)) {
     )
 }
 
-table(CAB_data_dem$sm_critical_central_n_sc_sm_no)
-table(CAB_data_dem$sm_critical_local_n_sc_sm_no)
 
 # List of social media platforms and corresponding variables
 table(CAB_data_dem$sm_positive_central_n_sc)
-platforms2 <- c("sm_positive_central_n_sc", "sm_positive_local_n_sc")
-variables2 <- c("sm_positive_central_n_sc", "sm_positive_local_n_sc")
+platformsG <- c("sm_engage_friends_n_sc","sm_engage_groups_n_sc","sm_engage_post_n_sc","sm_engage_critical_n_sc","sm_engage_supportive_sc", "sm_engage_offline_sc")
+variablesG <- c("sm_engage_friends_n_sc","sm_engage_groups_n_sc","sm_engage_post_n_sc","sm_engage_critical_n_sc","sm_engage_supportive_sc", "sm_engage_offline_sc")
 
 library(dplyr)
 # Loop over each platform and create numeric versions of each social media usage variable
-for (i in seq_along(variables2)) {
+for (i in seq_along(variablesG)) {
   CAB_data_dem <- CAB_data_dem %>%
     mutate(
-      !!paste0(platforms2[i], "_sm_no") := case_when(
+      !!paste0(platformsG[i], "_sm_no") := case_when(
         q22 == 2 ~ 0,       # Set to 0 if q22 is 2
-        TRUE ~ as.numeric(.data[[variables2[i]]])  # Use the corresponding variable
+        TRUE ~ as.numeric(.data[[variablesG[i]]])  # Use the corresponding variable
       )
     )
 }
 
-table(CAB_data_dem$sm_positive_central_n_sc_sm_no)
-table(CAB_data_dem$sm_positive_local_n_sc_sm_no)
+# Display summaries for verification
+for (platform in platformsG) {
+  print(paste0("Summary for ", platform, " (numeric):"))
+  print(summary(CAB_data_dem[[paste0(platform, "_sm_no")]]))
+}
+
+table(CAB_data_dem$sm_engage_friends_n_sc)
+table(CAB_data_dem$sm_engage_friends_n_sc_sm_no)
 
 
 
+
+
+
+names(CAB_data_dem)
+
+
+
+
+#Social Media Engagement Index##
+sm_engage_index = cbind(
+  CAB_data_dem$sm_engage_friends_n_sc_sm_no,
+  CAB_data_dem$sm_engage_groups_n_sc_sm_no,
+  CAB_data_dem$sm_engage_post_n_sc_sm_no,
+  CAB_data_dem$sm_engage_critical_n_sc_sm_no,
+  CAB_data_dem$sm_engage_supportive_sc_sm_no,
+  CAB_data_dem$sm_engage_offline_sc_sm_no)
+cronbach(sm_engage_index)
+
+CAB_data_dem$sm_engage_index = rescale(
+  CAB_data_dem$sm_engage_friends_n_sc_sm_no +
+    CAB_data_dem$sm_engage_groups_n_sc_sm_no +
+    CAB_data_dem$sm_engage_post_n_sc_sm_no +
+    CAB_data_dem$sm_engage_critical_n_sc_sm_no +
+    CAB_data_dem$sm_engage_supportive_sc_sm_no +
+    CAB_data_dem$sm_engage_offline_sc_sm_no,
+  to = c(0, 1)
+)
+
+table(CAB_data_dem$sm_engage_index)
+hist(CAB_data_dem$sm_engage_friends_n_sc_sm_no)
+
+#Critical TV Index
+CAB_data_dem$critical_tv_index = cbind(
+  CAB_data_dem$tv_critical_local_n_sc,
+  CAB_data_dem$tv_critical_central_n_sc)
+cronbach(CAB_data_dem$critical_tv_index)
+
+CAB_data_dem$critical_tv_index = rescale(
+  CAB_data_dem$tv_critical_local_n_sc +
+    CAB_data_dem$tv_critical_central_n_sc,
+  to = c(1, 0)
+)
+
+
+
+
+#Critical TV Index
+CAB_data_dem$critical_tv_index = cbind(
+  CAB_data_dem$tv_critical_local_n_sc,
+  CAB_data_dem$tv_critical_central_n_sc)
+cronbach(CAB_data_dem$critical_tv_index)
+
+CAB_data_dem$critical_tv_index = rescale(
+  CAB_data_dem$tv_critical_local_n_sc +
+    CAB_data_dem$tv_critical_central_n_sc,
+  to = c(1, 0)
+)
+
+
+names(CAB_data_dem)
