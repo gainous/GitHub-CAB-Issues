@@ -101,13 +101,9 @@ CAB_data_dem$participate_rally_sil_obs = rescale(CAB_data_dem$participate_rally_
 library(psy)
 sil_obs <- cbind(
   CAB_data_dem$pol_dis_silob,
-  # CAB_data_dem$trust_central_silob,
-  # CAB_data_dem$trust_local_silob,
-  # CAB_data_dem$sm_disagreement_politics_silob,
   CAB_data_dem$sm_engage_friends_silob,
   CAB_data_dem$sm_engage_groups_silob,
   CAB_data_dem$sm_engage_post_silob,
-  CAB_data_dem$sm_engage_critical_silob,
   CAB_data_dem$sm_engage_supportive_silob,
   CAB_data_dem$sm_engage_offline_silob,
   CAB_data_dem$participate_rally_sil_obs)
@@ -174,18 +170,11 @@ CAB_data_dem$sm_engage_friends_smw =  rescale(CAB_data_dem$sm_engage_friends_n, 
 CAB_data_dem$sm_engage_groups_smw =  rescale(CAB_data_dem$sm_engage_groups_n, to = c(1, 0)) # 1 means more
 CAB_data_dem$sm_engage_post_smw = rescale(CAB_data_dem$sm_engage_post_n, to = c(1, 0)) # 1 means more
 
+#SM Warriors
 sm_warriors <- cbind(
-  CAB_data_dem$sm_engage_critical_smw,
   CAB_data_dem$sm_engage_friends_smw,
   CAB_data_dem$sm_engage_groups_smw,
-  CAB_data_dem$sm_engage_post_smw,
-  # CAB_data_dem$participate_rally_smw,
-  CAB_data_dem$participate_protest_smw)
-  # CAB_data_dem$participate_meeting_smw,
-  # CAB_data_dem$participate_volunteer_smw,
-  # CAB_data_dem$participate_member_smw,
-  # CAB_data_dem$participate_contact_smw,
-  # CAB_data_dem$participate_vote_smw)
+  CAB_data_dem$sm_engage_post_smw)
 
 cronbach(sm_warriors)
 
@@ -215,16 +204,15 @@ hist(CAB_data_dem$smwar_index)
 
 # # Dillusioned Reformists Index ######
 # library(scales)
-# CAB_data_dem$system_capable_rescaled =  rescale(CAB_data_dem$system_capable_n_sc, to = c(0, 1)) #1 towards disagreement
-# CAB_data_dem$participate_rally_dilref =  rescale(CAB_data_dem$participate_rally_n, to = c(1, 0)) #1 Yes
+CAB_data_dem$system_capable_rescaled =  rescale(CAB_data_dem$system_capable_n_sc, to = c(0, 1)) #1 towards disagreement
+CAB_data_dem$participate_rally_dilref =  rescale(CAB_data_dem$participate_rally_n, to = c(1, 0)) #1 Yes
 
-# dil_ref = cbind(
-#   CAB_data_dem$sm_engage_critical_n_sc,
-#   CAB_data_dem$system_capable_rescaled,
-#   CAB_data_dem$system_hurdles_participate_n_sc,
-#   CAB_data_dem$trust_western_n_sc,
-#   CAB_data_dem$participate_rally_dilref)
-# cronbach(dil_ref)
+dil_ref = cbind(
+CAB_data_dem$system_capable_rescaled,
+CAB_data_dem$system_hurdles_participate_n_sc,
+CAB_data_dem$trust_western_n_sc,
+CAB_data_dem$participate_rally_dilref)
+cronbach(dil_ref)
 # 
 # alpha(dil_ref)
 # alpha(dil_ref, check.keys = TRUE)
@@ -317,16 +305,14 @@ CAB_data_dem$surv_averse_lib_index <- rescale(
 summary(CAB_data_dem$surv_averse_lib_index)
 hist(CAB_data_dem$surv_averse_lib_index)
 
-# Polarized Echo Chamber ####
-polarized_echo_chamber = cbind(
+# The Selective Avoiders ####
+selective_avoiders = cbind(
   CAB_data_dem$avoidance_unfriending_n_sc,
   CAB_data_dem$avoidance_blocking_n_sc,
-  # CAB_data_dem$echo_chamber_n_sc,
   CAB_data_dem$sm_disagreement_politics_n_sc,
-  # CAB_data_dem$news_balance_n_sc,
   CAB_data_dem$sm_disagreement_news_n_sc,
   CAB_data_dem$sm_disagreement_issues_n_sc)
-cronbach(polarized_echo_chamber)
+cronbach(selective_avoiders)
 
 
 library(Rcmdr)

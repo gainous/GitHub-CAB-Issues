@@ -124,6 +124,54 @@ CAB_data_dem$surv_averse_lib_index <- rescale(
 summary(CAB_data_dem$surv_averse_lib_index)
 hist(CAB_data_dem$surv_averse_lib_index)
 
+library(scales)
+# Step 5: Rescale the numeric values to the desired direction
+CAB_data_dem$pol_dis_silob <- rescale(CAB_data_dem$pol_discuss_n, to = c(0, 1)) #1 means less
+CAB_data_dem$trust_central_silob = rescale(CAB_data_dem$trust_central_n_sc, to = c(0, 1)) #1 means less
+CAB_data_dem$trust_local_silob = rescale(CAB_data_dem$trust_local_n_sc, to = c(0, 1)) #1 means less
+CAB_data_dem$sm_disagreement_politics_silob = rescale(CAB_data_dem$sm_disagreement_politics_n_sc, to = c(1, 0)) #see disagreement? #1 means very often
+CAB_data_dem$sm_engage_friends_silob <- rescale(CAB_data_dem$sm_engage_friends_n, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_groups_silob = rescale(CAB_data_dem$sm_engage_groups_n, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_post_silob = rescale(CAB_data_dem$sm_engage_post_n, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_critical_silob = rescale(CAB_data_dem$sm_engage_critical_n, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_supportive_silob = rescale(CAB_data_dem$sm_engage_supportive_n, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_offline_silob = rescale(CAB_data_dem$sm_engage_offline_n, to = c(0, 1)) # 1 meas less
+CAB_data_dem$participate_rally_sil_obs = rescale(CAB_data_dem$participate_rally_n, to = c(0, 1))   # 1 means No
+
+library(psy)
+sil_obs <- cbind(
+  CAB_data_dem$pol_dis_silob,
+  CAB_data_dem$sm_engage_friends_silob,
+  CAB_data_dem$sm_engage_groups_silob,
+  CAB_data_dem$sm_engage_post_silob,
+  CAB_data_dem$sm_engage_supportive_silob,
+  CAB_data_dem$sm_engage_offline_silob,
+  CAB_data_dem$participate_rally_sil_obs)
+
+cronbach(sil_obs)
+
+CAB_data_dem$sm_engage_critical_smw =  rescale(CAB_data_dem$sm_engage_critical_n, to = c(1, 0)) # 1 means more
+CAB_data_dem$sm_engage_friends_smw =  rescale(CAB_data_dem$sm_engage_friends_n, to = c(1, 0)) # 1 means more
+CAB_data_dem$sm_engage_groups_smw =  rescale(CAB_data_dem$sm_engage_groups_n, to = c(1, 0)) # 1 means more
+CAB_data_dem$sm_engage_post_smw = rescale(CAB_data_dem$sm_engage_post_n, to = c(1, 0)) # 1 means more
+
+#SM Warriors
+sm_warriors <- cbind(
+  CAB_data_dem$sm_engage_friends_smw,
+  CAB_data_dem$sm_engage_groups_smw,
+  CAB_data_dem$sm_engage_post_smw)
+
+cronbach(sm_warriors)
+
+# The Selective Avoiders ####
+selective_avoiders = cbind(
+  CAB_data_dem$avoidance_unfriending_n_sc,
+  CAB_data_dem$avoidance_blocking_n_sc,
+  CAB_data_dem$sm_disagreement_politics_n_sc,
+  CAB_data_dem$sm_disagreement_news_n_sc,
+  CAB_data_dem$sm_disagreement_issues_n_sc)
+cronbach(selective_avoiders)
+
 
 # List of social media platforms and corresponding variables
 platforms <- c("facebook_n_sc", "vkontakte_n_sc", "instagram_n_sc", "tiktok_n_sc", "twitter_n_sc", "youtube_n_sc", "whatsapp_n_sc", "telegram_n_sc")
@@ -315,7 +363,7 @@ hist(CAB_data_dem$positive_social_media)
 
 
 
-##Socail Media Engagement####
+##Social Media Engagement####
 platforms <- c("sm_engage_friends_n_sc", "sm_engage_groups_n_sc", "sm_engage_post_n_sc", "sm_engage_critical_n_sc", "sm_engage_supportive_sc", "sm_engage_offline_sc")
 variables <- c("q38_a", "q38_b", "q38_c", "q38_d", "q38_e")
 
@@ -467,7 +515,7 @@ hist(CAB_data_dem$critical_social_media)
 ################################################################################3
 #Create country dummies
 # Generating dummy variables using model.matrix
-dummy_vars <- model.matrix(~ country - 1, data = CAB_data_merge)
+dummy_vars <- model.matrix(~ country - 1, data = CAB_data_dem)
 
 # Renaming the dummy variables
 # Replace spaces with underscores and prepend with the variable name for clarity
@@ -475,13 +523,13 @@ colnames(dummy_vars) <- gsub(" ", "_", colnames(dummy_vars))
 colnames(dummy_vars) <- gsub("country", "country_", colnames(dummy_vars))
 
 # Binding the dummy variables back to the original data frame
-CAB_data_merge <- cbind(CAB_data_merge, dummy_vars)
+CAB_data_dem <- cbind(CAB_data_dem, dummy_vars)
 rm(dummy_vars)
 
 # Frequency tables for dummy variables of Country
-table(CAB_data_merge$country_KZ)
-table(CAB_data_merge$country_KG)
-table(CAB_data_merge$country_GA)
+table(CAB_data_dem$country_KZ)
+table(CAB_data_dem$country_KG)
+table(CAB_data_dem$country_GA)
 
 summary(lm(critical_social_media ~ national_defenders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(critical_social_media ~ idconsisten_conserv_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
