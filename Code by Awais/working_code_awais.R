@@ -124,19 +124,50 @@ CAB_data_dem$surv_averse_lib_index <- rescale(
 summary(CAB_data_dem$surv_averse_lib_index)
 hist(CAB_data_dem$surv_averse_lib_index)
 
+
+
+#Silent Observers Index
+# List of social media platforms and corresponding variables
+platformsz <- c("pol_discuss_n_sc")
+variablesz <- c("pol_discuss_n_sc")
+
+library(dplyr)
+# Loop over each platform and create numeric versions of each social media usage variable
+for (i in seq_along(variablesz)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(platformsz[i], "_sm_no") := case_when(
+        q9 == 4 ~ 0,       # Set to 0 if q9 is 4
+        TRUE ~ as.numeric(.data[[variablesz[i]]])  # Use the corresponding q23_ variable
+      )
+    )
+}
+
+
+# Display summaries for verification
+for (platform in platformsz) {
+  print(paste0("Summary for ", platform, " (numeric):"))
+  print(summary(CAB_data_dem[[paste0(platform, "_sm_no")]]))
+}
+
+table(CAB_data_dem$pol_discuss_n_sc)
+table(CAB_data_dem$pol_discuss_n_sc_sm_no)
+
 library(scales)
 # Step 5: Rescale the numeric values to the desired direction
-CAB_data_dem$pol_dis_silob <- rescale(CAB_data_dem$pol_discuss_n, to = c(0, 1)) #1 means less
+CAB_data_dem$pol_dis_silob <- rescale(CAB_data_dem$pol_discuss_n_sc_sm_no, to = c(0, 1)) #1 means less
 CAB_data_dem$trust_central_silob = rescale(CAB_data_dem$trust_central_n_sc, to = c(0, 1)) #1 means less
 CAB_data_dem$trust_local_silob = rescale(CAB_data_dem$trust_local_n_sc, to = c(0, 1)) #1 means less
 CAB_data_dem$sm_disagreement_politics_silob = rescale(CAB_data_dem$sm_disagreement_politics_n_sc, to = c(1, 0)) #see disagreement? #1 means very often
-CAB_data_dem$sm_engage_friends_silob <- rescale(CAB_data_dem$sm_engage_friends_n, to = c(0, 1)) # 1 meas less
-CAB_data_dem$sm_engage_groups_silob = rescale(CAB_data_dem$sm_engage_groups_n, to = c(0, 1)) # 1 meas less
-CAB_data_dem$sm_engage_post_silob = rescale(CAB_data_dem$sm_engage_post_n, to = c(0, 1)) # 1 meas less
-CAB_data_dem$sm_engage_critical_silob = rescale(CAB_data_dem$sm_engage_critical_n, to = c(0, 1)) # 1 meas less
-CAB_data_dem$sm_engage_supportive_silob = rescale(CAB_data_dem$sm_engage_supportive_n, to = c(0, 1)) # 1 meas less
-CAB_data_dem$sm_engage_offline_silob = rescale(CAB_data_dem$sm_engage_offline_n, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_friends_silob <- rescale(CAB_data_dem$sm_engage_friends_n_sc_sm_no, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_groups_silob = rescale(CAB_data_dem$sm_engage_groups_n_sc_sm_no, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_post_silob = rescale(CAB_data_dem$sm_engage_post_n_sc_sm_no, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_critical_silob = rescale(CAB_data_dem$sm_engage_critical_n_sc_sm_no, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_supportive_silob = rescale(CAB_data_dem$sm_engage_supportive_sc_sm_no, to = c(0, 1)) # 1 meas less
+CAB_data_dem$sm_engage_offline_silob = rescale(CAB_data_dem$sm_engage_offline_sc_sm_no, to = c(0, 1)) # 1 meas less
 CAB_data_dem$participate_rally_sil_obs = rescale(CAB_data_dem$participate_rally_n, to = c(0, 1))   # 1 means No
+
+
 
 library(psy)
 sil_obs <- cbind(
@@ -150,10 +181,21 @@ sil_obs <- cbind(
 
 cronbach(sil_obs)
 
-CAB_data_dem$sm_engage_critical_smw =  rescale(CAB_data_dem$sm_engage_critical_n, to = c(1, 0)) # 1 means more
-CAB_data_dem$sm_engage_friends_smw =  rescale(CAB_data_dem$sm_engage_friends_n, to = c(1, 0)) # 1 means more
-CAB_data_dem$sm_engage_groups_smw =  rescale(CAB_data_dem$sm_engage_groups_n, to = c(1, 0)) # 1 means more
-CAB_data_dem$sm_engage_post_smw = rescale(CAB_data_dem$sm_engage_post_n, to = c(1, 0)) # 1 means more
+CAB_data_dem$sil_obs_index <- rescale(
+  CAB_data_dem$pol_dis_silob +
+  CAB_data_dem$sm_engage_friends_silob +
+  CAB_data_dem$sm_engage_groups_silob +
+  CAB_data_dem$sm_engage_post_silob +
+  CAB_data_dem$sm_engage_supportive_silob +
+  CAB_data_dem$sm_engage_offline_silob +
+  CAB_data_dem$participate_rally_sil_obs,
+  to = c(0, 1)
+)
+table(CAB_data_dem$sil_obs_index)
+
+CAB_data_dem$sm_engage_friends_smw =  rescale(CAB_data_dem$sm_engage_friends_n_sc_sm_no, to = c(1, 0)) # 1 means more
+CAB_data_dem$sm_engage_groups_smw =  rescale(CAB_data_dem$sm_engage_groups_n_sc_sm_no, to = c(1, 0)) # 1 means more
+CAB_data_dem$sm_engage_post_smw = rescale(CAB_data_dem$sm_engage_post_n_sc_sm_no, to = c(1, 0)) # 1 means more
 
 #SM Warriors
 sm_warriors <- cbind(
@@ -163,14 +205,31 @@ sm_warriors <- cbind(
 
 cronbach(sm_warriors)
 
+CAB_data_dem$sm_warriors_index <- rescale(
+  CAB_data_dem$sm_engage_friends_smw+
+  CAB_data_dem$sm_engage_groups_smw+
+  CAB_data_dem$sm_engage_post_smw,
+  to = c(0, 1)
+)
+
+
 # The Selective Avoiders ####
 selective_avoiders = cbind(
-  CAB_data_dem$avoidance_unfriending_n_sc,
-  CAB_data_dem$avoidance_blocking_n_sc,
-  CAB_data_dem$sm_disagreement_politics_n_sc,
-  CAB_data_dem$sm_disagreement_news_n_sc,
-  CAB_data_dem$sm_disagreement_issues_n_sc)
+  CAB_data_dem$avoidance_unfriending_n_sc_sm_no,
+  CAB_data_dem$avoidance_blocking_n_sc_sm_no,
+  CAB_data_dem$sm_disagreement_politics_n_sc_sm_no,
+  CAB_data_dem$sm_disagreement_news_n_sc_sm_no,
+  CAB_data_dem$sm_disagreement_issues_n_sc_sm_no)
 cronbach(selective_avoiders)
+
+CAB_data_dem$selective_avoiders_index <- rescale(
+    CAB_data_dem$avoidance_unfriending_n_sc_sm_no + 
+  CAB_data_dem$avoidance_blocking_n_sc_sm_no + 
+  CAB_data_dem$sm_disagreement_politics_n_sc_sm_no + 
+  CAB_data_dem$sm_disagreement_news_n_sc_sm_no + 
+  CAB_data_dem$sm_disagreement_issues_n_sc_sm_no, 
+  to = c(0, 1)
+)
 
 
 # List of social media platforms and corresponding variables
@@ -543,10 +602,21 @@ summary(lm(critical_tv_index ~ national_defenders_index + gen_sm_index + age_n_s
 summary(lm(critical_tv_index ~ idconsisten_conserv_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(critical_tv_index ~ surv_averse_lib_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 
+summary(lm(critical_social_media ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(positive_social_media ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(critical_tv_index ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+
+summary(lm(critical_social_media ~ sm_warriors_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(positive_social_media ~ sm_warriors_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(critical_tv_index ~ sm_warriors_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+
+summary(lm(critical_social_media ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(positive_social_media ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(critical_tv_index ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+
 
 #THIS IS THE BIG BANG AT THE END
 
 summary(lm(news_balance_n_sc ~ national_defenders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(news_balance_n_sc  ~ idconsisten_conserv_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(news_balance_n_sc  ~ surv_averse_lib_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-
