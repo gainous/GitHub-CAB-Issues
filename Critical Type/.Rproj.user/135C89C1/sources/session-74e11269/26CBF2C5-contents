@@ -1,0 +1,99 @@
+#Adding "Do not Use Internet" as 0 to the Do you Use Social media Questions #########################
+table(CAB_data_dem$internet_use_No)
+table(CAB_data_dem$sm_use_Yes)
+
+# Recode sm_use_Yes_internet_use_No based on the given conditions
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(sm_use_Yes_internet_use_No = case_when(
+    internet_use_No == 1 ~ 0,  # If internet_use_No = 1, set to 0
+    sm_use_Yes == 0 ~ 0,      # If sm_use_Yes = 0, set to 0
+    sm_use_Yes == 1 ~ 1       # If sm_use_Yes = 1, set to 1
+  ))
+table(CAB_data_dem$sm_use_Yes_internet_use_No)
+
+#Create Rescaled Political Discussion
+CAB_data_dem$pol_discuss_n_sc = rescale(CAB_data_dem$pol_discuss_n, to = c(1, 0))
+
+#Fix name of SM Supportive and Offline
+CAB_data_dem$sm_engage_supportive_n_sc = CAB_data_dem$sm_engage_supportive_sc
+CAB_data_dem$sm_engage_offline_n_sc = CAB_data_dem$sm_engage_offline_sc
+
+#Platforms###################
+sm_variables <- c("facebook_n_sc", "vkontakte_n_sc", "instagram_n_sc", "tiktok_n_sc", "twitter_n_sc", "sm_critical_local_n_sc",                                                          
+                  "sm_critical_central_n_sc", "sm_positive_local_n_sc", "sm_positive_central_n_sc", "echo_chamber_n_sc",
+                  "avoidance_blocking_n_sc", "avoidance_unfriending_n_sc", "avoidance_leaving_group_n_sc", "avoidance_unsubscribing_n_sc",                                                    
+                  "sm_disagreement_politics_n_sc", "sm_disagreement_news_n_sc", "sm_disagreement_issues_n_sc", "sm_engage_friends_n_sc",                                                          
+                  "sm_engage_groups_n_sc", "sm_engage_post_n_sc", "sm_engage_critical_n_sc", "sm_engage_supportive_n_sc",                                                         
+                  "sm_engage_offline_n_sc", "pol_news_tv_n_sc", "pol_news_facebook_n_sc", "pol_news_vkontakte_n_sc", "pol_news_tiktok_n_sc",                                                           
+                  "pol_news_twitter_n_sc", "pol_news_odnoklassniki_n_sc")
+
+variables_sm <- c("facebook_n_sc", "vkontakte_n_sc", "instagram_n_sc", "tiktok_n_sc", "twitter_n_sc", "sm_critical_local_n_sc",                                                          
+                  "sm_critical_central_n_sc", "sm_positive_local_n_sc", "sm_positive_central_n_sc", "echo_chamber_n_sc",
+                  "avoidance_blocking_n_sc", "avoidance_unfriending_n_sc", "avoidance_leaving_group_n_sc", "avoidance_unsubscribing_n_sc",                                                    
+                  "sm_disagreement_politics_n_sc", "sm_disagreement_news_n_sc", "sm_disagreement_issues_n_sc", "sm_engage_friends_n_sc",                                                          
+                  "sm_engage_groups_n_sc", "sm_engage_post_n_sc", "sm_engage_critical_n_sc", "sm_engage_supportive_n_sc",                                                         
+                  "sm_engage_offline_n_sc", "pol_news_tv_n_sc", "pol_news_facebook_n_sc", "pol_news_vkontakte_n_sc", "pol_news_tiktok_n_sc",                                                           
+                  "pol_news_twitter_n_sc", "pol_news_odnoklassniki_n_sc")
+
+library(dplyr)
+# Loop over each platform and create numeric versions of each social media usage variable
+for (i in seq_along(variables_sm)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(sm_variables[i], "_no") := case_when(
+        sm_use_Yes_internet_use_No == 0 ~ 0,       # Set to 0 if sm_use_Yes_internet_use_No is 0
+        TRUE ~ as.numeric(.data[[variables_sm[i]]])  # Use the corresponding sm_ variable
+      )
+    )
+}
+
+# Display summaries for verification
+for (sm_variables in sm_variables) {
+  print(paste0("Summary for ", sm_variables, " (numeric):"))
+  print(summary(CAB_data_dem[[paste0(sm_variables, "_no")]]))
+}
+
+#Factor Variables######################################################################################################
+#Adding "Do not Use Internet" as No to the Do you Use Social media Questions #########################
+table(CAB_data_dem$internet_use)
+table(CAB_data_dem$sm_use)
+
+# Recode sm_use_Yes_internet_use_No_f based on the given conditions
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(sm_use_Yes_internet_use_No_f = case_when(
+    internet_use == "No" ~ "No",  # If internet_use = No, set to No
+    sm_use == "No" ~ "No",      # If sm_use = No, set to No
+    sm_use == "Yes" ~ "Yes"       # If sm_use = yes, set to Yes
+  ))
+table(CAB_data_dem$sm_use_Yes_internet_use_No_f)
+
+#Platforms###################
+sm_variables_f <- c("facebook", "vkontakte", "instagram", "tiktok", "twitter", "sm_critical_local",                                                          
+                    "sm_critical_central", "sm_positive_local", "sm_positive_central", 
+                    "avoidance_blocking", "avoidance_unfriending", "avoidance_leaving_group", "avoidance_unsubscribing",                                                    
+                    "sm_disagreement_politics", "sm_disagreement_news", "sm_disagreement_issues", "sm_engage_friends",                                                          
+                    "sm_engage_groups", "sm_engage_post", "sm_engage_critical", "sm_engage_supportive",                                                         
+                    "sm_engage_offline", "pol_news_tv", "pol_news_facebook", "pol_news_vkontakte", "pol_news_tiktok",                                                           
+                    "pol_news_twitter", "pol_news_odnoklassniki")
+
+variables_sm_f <- c("facebook", "vkontakte", "instagram", "tiktok", "twitter", "sm_critical_local",                                                          
+                    "sm_critical_central", "sm_positive_local", "sm_positive_central", 
+                    "avoidance_blocking", "avoidance_unfriending", "avoidance_leaving_group", "avoidance_unsubscribing",                                                    
+                    "sm_disagreement_politics", "sm_disagreement_news", "sm_disagreement_issues", "sm_engage_friends",                                                          
+                    "sm_engage_groups", "sm_engage_post", "sm_engage_critical", "sm_engage_supportive",                                                         
+                    "sm_engage_offline", "pol_news_tv", "pol_news_facebook", "pol_news_vkontakte", "pol_news_tiktok",                                                           
+                    "pol_news_twitter", "pol_news_odnoklassniki")
+
+# Loop over each platform and create factor versions of each social media usage variable
+for (i in seq_along(variables_sm_f)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(sm_variables_f[i], "_no") := case_when(
+        sm_use_Yes_internet_use_No_f == "No" ~ "No",  # Set to "No" if sm_use_Yes_internet_use_No_f is "No"
+        TRUE ~ as.character(.data[[variables_sm_f[i]]])  # Convert the corresponding variable to character
+      )
+    )
+}
+
+
+names(CAB_data_dem)

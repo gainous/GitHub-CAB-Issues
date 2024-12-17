@@ -1,0 +1,696 @@
+names(CAB_data)
+
+library(dplyr)
+
+# Combine the data frames into a single data frame
+CAB_data_dem <- bind_rows(GA_data, KG_data, KZ_data)
+table(CAB_data_dem$country)
+names(CAB_data_dem)
+
+#Adding missing recodes and renaming misnamed recodes
+library(scales)
+CAB_data_dem$pol_discuss_n_sc = rescale(CAB_data_dem$pol_discuss_n, to = c(1, 0))
+CAB_data_dem$pol_disagree_n_sc = rescale(CAB_data_dem$pol_disagree_n, to = c(1, 0))
+CAB_data_dem$sm_engage_supportive_n_sc = CAB_data_dem$sm_engage_supportive_sc
+summary(CAB_data_dem$pol_discuss_n_sc)
+summary(CAB_data_dem$pol_disagree_n_sc)
+summary(CAB_data_dem$sm_engage_supportive_n_sc)
+
+#Pre-imputation Recoding###############################################################################################
+####################################################################################################################
+#################################################################################################################
+#Adding "Do not Use Internet" as 0 to the Do you Use Social media Questions #########################
+table(CAB_data_dem$internet_use_No)
+table(CAB_data_dem$sm_use_Yes)
+
+# Recode sm_use_Yes_internet_use_No based on the given conditions
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(sm_use_Yes_internet_use_No = case_when(
+    internet_use_No == 1 ~ 0,  # If internet_use_No = 1, set to 0
+    sm_use_Yes == 0 ~ 0,      # If sm_use_Yes = 0, set to 0
+    sm_use_Yes == 1 ~ 1       # If sm_use_Yes = 1, set to 1
+  ))
+table(CAB_data_dem$sm_use_Yes_internet_use_No)
+
+
+#Platforms###################
+sm_variables <- c("avoidance_blocking_n_sc", "avoidance_unfriending_n_sc", "avoidance_leaving_group_n_sc", "avoidance_unsubscribing_n_sc", 
+                  "sm_disagreement_politics_n_sc", "sm_disagreement_issues_n_sc", "sm_disagreement_news_n_sc", "echo_chamber_n_sc", 
+                  "sm_critical_local_n_sc", "sm_critical_central_n_sc",
+                  "sm_positive_local_n_sc", "sm_positive_central_n_sc",
+                  "sm_engage_critical_n_sc", "sm_engage_supportive_n_sc")
+variables_sm <- c("avoidance_blocking_n_sc", "avoidance_unfriending_n_sc", "avoidance_leaving_group_n_sc", "avoidance_unsubscribing_n_sc", 
+                  "sm_disagreement_politics_n_sc", "sm_disagreement_issues_n_sc", "sm_disagreement_news_n_sc", "echo_chamber_n_sc", 
+                  "sm_critical_local_n_sc", "sm_critical_central_n_sc",
+                  "sm_positive_local_n_sc", "sm_positive_central_n_sc",
+                  "sm_engage_critical_n_sc", "sm_engage_supportive_n_sc")
+
+library(dplyr)
+# Loop over each platform and create numeric versions of each social media usage variable
+for (i in seq_along(variables_sm)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(sm_variables[i], "_no") := case_when(
+        sm_use_Yes_internet_use_No == 0 ~ 0,       # Set to 0 if sm_use_Yes_internet_use_No is 0
+        TRUE ~ as.numeric(.data[[variables_sm[i]]])  # Use the corresponding sm_ variable
+      )
+    )
+}
+
+# Display summaries for verification
+for (sm_variables in sm_variables) {
+  print(paste0("Summary for ", sm_variables, " (numeric):"))
+  print(summary(CAB_data_dem[[paste0(sm_variables, "_no")]]))
+}
+
+#Adding "Do not Use Internet" as No to the Do you Use Social media Questions #########################
+table(CAB_data_dem$internet_use)
+table(CAB_data_dem$sm_use)
+
+# Recode sm_use_Yes_internet_use_No_f based on the given conditions
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(sm_use_Yes_internet_use_No_f = case_when(
+    internet_use == "No" ~ "No",  # If internet_use = No, set to No
+    sm_use == "No" ~ "No",      # If sm_use = No, set to No
+    sm_use == "Yes" ~ "Yes"       # If sm_use = yes, set to Yes
+  ))
+table(CAB_data_dem$sm_use_Yes_internet_use_No_f)
+
+#Platforms###################
+sm_variables_f <- c("avoidance_blocking", "avoidance_unfriending", "avoidance_leaving_group", "avoidance_unsubscribing", 
+                    "sm_disagreement_politics", "sm_disagreement_issues", "sm_disagreement_news",
+                    "sm_critical_local", "sm_critical_central",
+                    "sm_positive_local", "sm_positive_central",
+                    "sm_engage_critical", "sm_engage_supportive")
+variables_sm_f <- c("avoidance_blocking", "avoidance_unfriending", "avoidance_leaving_group", "avoidance_unsubscribing", 
+                    "sm_disagreement_politics", "sm_disagreement_issues", "sm_disagreement_news",
+                    "sm_critical_local", "sm_critical_central",
+                    "sm_positive_local", "sm_positive_central",
+                    "sm_engage_critical", "sm_engage_supportive")
+
+# Loop over each platform and create factor versions of each social media usage variable
+for (i in seq_along(variables_sm_f)) {
+  CAB_data_dem <- CAB_data_dem %>%
+    mutate(
+      !!paste0(sm_variables_f[i], "_no") := case_when(
+        sm_use_Yes_internet_use_No_f == "No" ~ "No",  # Set to "No" if sm_use_Yes_internet_use_No_f is "No"
+        TRUE ~ as.character(.data[[variables_sm_f[i]]])  # Convert the corresponding variable to character
+      )
+    )
+}
+
+# Display summaries for verification
+for (sm_variables_f in sm_variables_f) {
+  print(paste0("Summary for ", sm_variables_f, " (numeric):"))
+  print(table(CAB_data_dem[[paste0(sm_variables_f, "_no")]]))
+}
+
+#Adding "Do not Political Discuss" as 0 to the Do you Use Social media Questions #########################
+table(CAB_data_dem$internet_use)
+table(CAB_data_dem$sm_use)
+
+# Recode sm_use_Yes_internet_use_No_f based on the given conditions
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(sm_use_Yes_internet_use_No_f = case_when(
+    internet_use == "No" ~ "No",  # If internet_use = No, set to No
+    sm_use == "No" ~ "No",      # If sm_use = No, set to No
+    sm_use == "Yes" ~ "Yes"       # If sm_use = yes, set to Yes
+  ))
+table(CAB_data_dem$sm_use_Yes_internet_use_No_f)
+
+# Recode pol_disagree_n_sc_no based on the given conditions
+table(CAB_data_dem$pol_discuss_n_sc)
+table(CAB_data_dem$pol_disagree_n_sc)
+
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(pol_disagree_n_sc_no = case_when(
+    pol_discuss_n_sc == 0 ~ 0,  # If pol_discuss_n_sc = 0, set pol_disagree_n_sc_no to 0
+    TRUE ~ pol_disagree_n_sc   # Otherwise, retain the original value of pol_disagree_n_sc
+  ))
+table(CAB_data_dem$pol_disagree_n_sc_no)
+
+#The factor version
+table(CAB_data_dem$pol_discuss)
+table(CAB_data_dem$pol_disagree)
+
+
+CAB_data_dem <- CAB_data_dem %>%
+  mutate(pol_disagree_no = case_when(
+    pol_discuss == "Never" ~ "Never",  # If pol_discuss = "Never", set to "Never"
+    TRUE ~ pol_disagree  # Otherwise, retain the original value of pol_disagree
+  )) %>%
+  mutate(pol_disagree_no = factor(pol_disagree_no, 
+                                         levels = c("Never", "Rarely", "Some of the time", "Most of the time")))
+
+# Verify the levels and table
+levels(CAB_data_dem$pol_disagree_no)
+table(CAB_data_dem$pol_disagree_no)
+
+save.image("C:/Users/User/Dropbox/Research/Internet Politics/Central Asia/Central Asia Grant Survey Project/Dinner Table/GitHub-Dinner/dinner_data.RData")
+
+#Multiple Imputation####################################################
+names(CAB_data_dem)
+
+#Imputation - All Used Numeric Variables for All Countries
+for_imp = c("country", 
+            "avoidance_blocking_n_sc_no", "avoidance_unfriending_n_sc_no", "avoidance_leaving_group_n_sc_no", "avoidance_unsubscribing_n_sc_no", 
+            "sm_disagreement_politics_n_sc_no", "sm_disagreement_issues_n_sc_no", "sm_disagreement_news_n_sc_no", "echo_chamber_n_sc_no", 
+            "sm_critical_local_n_sc_no", "sm_critical_central_n_sc_no",
+            "sm_positive_local_n_sc_no", "sm_positive_central_n_sc_no", 
+            "tv_critical_local_n_sc", "tv_critical_central_n_sc",  
+            "sm_engage_critical_n_sc_no", "sm_engage_supportive_n_sc_no", 
+            "pol_discuss_n_sc", "pol_disagree_n_sc_no",
+            "pol_interest_n_sc", "age_n_sc", "urbanicity_Village", "gender_Male","edu_n_sc", "inc_n_sc","weight")
+
+imp_data = CAB_data_dem[for_imp]
+
+names(imp_data)
+
+table(CAB_data_dem$id)
+
+# Load required libraries
+library(mice)
+library(sjmisc)
+library(dplyr)
+
+# Perform multiple imputation for numeric variables
+CAB_data_dem_imputed_numeric <- mice(imp_data, m=30, maxit=10, method='pmm', seed=42)
+
+# Merge imputations into one frame
+CAB_data_dem_merge_numeric = merge_imputations(imp_data, CAB_data_dem_imputed_numeric)
+
+# Create ID
+CAB_data_dem_merge_numeric = mutate(CAB_data_dem_merge_numeric, id = rownames(CAB_data_dem_merge_numeric))
+
+# Identify variables that were not imputed due to no missing values
+complete_vars_numeric <- names(imp_data)[colSums(is.na(imp_data)) == 0]
+
+# Create dataframes of these complete variables
+missing_df_numeric = imp_data[complete_vars_numeric]
+
+# Create id for merging
+missing_df_numeric = mutate(missing_df_numeric, id = rownames(missing_df_numeric))
+
+# Bind/merge the complete variables back to the imputed data
+CAB_data_dem_merge_numeric = merge(missing_df_numeric, CAB_data_dem_merge_numeric, by = "id", all.y = TRUE)
+
+names(CAB_data_dem_merge_numeric)
+
+# Imputation - All Used Factor Variables for All Countries
+for_imp_f = c("avoidance_blocking_no", "avoidance_unfriending_no", "avoidance_leaving_group_no", "avoidance_unsubscribing_no", 
+              "sm_disagreement_politics_no", "sm_disagreement_issues_no", "sm_disagreement_news_no", 
+              "sm_critical_local_no", "sm_critical_central_no",
+              "sm_positive_local_no", "sm_positive_central_no", 
+              "tv_critical_local", "tv_critical_central",  
+              "sm_engage_critical_no", "sm_engage_supportive_no", 
+              "pol_discuss", "pol_disagree_no")
+
+imp_data_f = CAB_data_dem[for_imp_f]
+
+# Ensure variables are converted to factors
+imp_data_f[] <- lapply(imp_data_f, as.factor)
+
+# Perform multiple imputation for factor variables using polyreg
+CAB_data_dem_imputed_factors <- mice(imp_data_f, m = 30, maxit = 10, method = 'polyreg', seed = 42)
+
+# Merge imputations into one frame
+CAB_data_dem_merge_factors = merge_imputations(imp_data_f, CAB_data_dem_imputed_factors)
+
+# Create an ID for merging
+CAB_data_dem_merge_factors <- mutate(CAB_data_dem_merge_factors, id = rownames(CAB_data_dem_merge_factors))
+
+# Merge the numeric and factor imputed datasets
+CAB_data_dem_final_merge <- merge(CAB_data_dem_merge_factors, CAB_data_dem_merge_numeric, by = "id")
+
+# Rename final imputed dataset
+CAB_data_dem_imputed <- CAB_data_dem_final_merge
+
+#Check dataset
+names(CAB_data_dem_imputed)
+
+# Clean up workspace
+rm(CAB_data_dem_final_merge)
+rm(CAB_data_dem_merge_factors)
+rm(CAB_data_dem_merge_numeric)
+rm(imp_data)
+rm(imp_data_f)
+rm(complete_vars_numeric)
+rm(missing_df_numeric)
+rm(for_imp)
+rm(for_imp_f)
+
+save.image("C:/Users/User/Dropbox/Research/Internet Politics/Central Asia/Central Asia Grant Survey Project/Dinner Table/GitHub-Dinner/dinner_data.RData")
+
+#Variable Construction###############################################
+library(psy)
+library(scales)
+
+#Social Media Critical Exposure/Engagement Index
+sm_critical_matrix = cbind(
+  CAB_data_dem_imputed$sm_critical_local_n_sc_no,
+  CAB_data_dem_imputed$sm_critical_central_n_sc_no,
+  CAB_data_dem_imputed$sm_engage_critical_n_sc_no)
+cronbach(sm_critical_matrix)
+
+CAB_data_dem_imputed$sm_critical_index = rescale((
+  CAB_data_dem_imputed$sm_critical_local_n_sc_no +
+    CAB_data_dem_imputed$sm_critical_central_n_sc_no +
+    CAB_data_dem_imputed$sm_engage_critical_n_sc_no), to = c(0, 1))
+summary(CAB_data_dem_imputed$sm_critical_index)
+
+#Television Critical Exposure Index
+tv_critical_matrix = cbind(
+  CAB_data_dem_imputed$tv_critical_local_n_sc,
+  CAB_data_dem_imputed$tv_critical_central_n_sc)
+cronbach(tv_critical_matrix)
+
+CAB_data_dem_imputed$tv_critical_index = rescale((
+  CAB_data_dem_imputed$tv_critical_local_n_sc +
+    CAB_data_dem_imputed$tv_critical_central_n_sc), to = c(0, 1))
+summary(CAB_data_dem_imputed$tv_critical_index)
+
+#Bubble Index 
+#Invert disagreement to run same direction as avoidance and echo chamber
+CAB_data_dem_imputed$sm_disagreement_politics_n_sc_no_i = rescale(CAB_data_dem_imputed$sm_disagreement_politics_n_sc_no, to = c(1, 0))
+CAB_data_dem_imputed$sm_disagreement_issues_n_sc_no_i = rescale(CAB_data_dem_imputed$sm_disagreement_issues_n_sc_no, to = c(1, 0))
+CAB_data_dem_imputed$sm_disagreement_news_n_sc_no_i = rescale(CAB_data_dem_imputed$sm_disagreement_news_n_sc_no, to = c(1, 0))
+
+library(psy)
+bubble_matrix = cbind(
+  CAB_data_dem_imputed$avoidance_blocking_n_sc_no,
+  CAB_data_dem_imputed$avoidance_unfriending_n_sc_no,
+  CAB_data_dem_imputed$avoidance_leaving_group_n_sc_no,
+  CAB_data_dem_imputed$avoidance_unsubscribing_n_sc_no,
+  CAB_data_dem_imputed$sm_disagreement_politics_n_sc_no_i,
+  CAB_data_dem_imputed$sm_disagreement_issues_n_sc_no_i,
+  CAB_data_dem_imputed$sm_disagreement_news_n_sc_no_i,
+  CAB_data_dem_imputed$echo_chamber_n_sc_no)
+cronbach(bubble_matrix)
+
+CAB_data_dem_imputed$bubble_index = rescale((
+  CAB_data_dem_imputed$avoidance_blocking_n_sc_no +
+    CAB_data_dem_imputed$avoidance_unfriending_n_sc_no +
+    CAB_data_dem_imputed$avoidance_leaving_group_n_sc_no +
+    CAB_data_dem_imputed$avoidance_unsubscribing_n_sc_no +
+    CAB_data_dem_imputed$sm_disagreement_politics_n_sc_no_i +
+  CAB_data_dem_imputed$sm_disagreement_issues_n_sc_no_i +
+  CAB_data_dem_imputed$sm_disagreement_news_n_sc_no_i +
+    CAB_data_dem_imputed$echo_chamber_n_sc_no), to = c(0, 1))
+summary(CAB_data_dem_imputed$bubble_index)
+
+#Create country dummies
+# Generating dummy variables using model.matrix
+dummy_vars <- model.matrix(~ country - 1, data = CAB_data_dem_imputed)
+
+# Renaming the dummy variables
+# Replace spaces with underscores and prepend with the variable name for clarity
+colnames(dummy_vars) <- gsub(" ", "_", colnames(dummy_vars))
+colnames(dummy_vars) <- gsub("country", "country_", colnames(dummy_vars))
+
+# Binding the dummy variables back to the original data frame
+CAB_data_dem_imputed <- cbind(CAB_data_dem_imputed, dummy_vars)
+rm(dummy_vars)
+
+# Frequency tables for dummy variables of Country
+table(CAB_data_dem_imputed$country_KZ)
+table(CAB_data_dem_imputed$country_KG)
+table(CAB_data_dem_imputed$country_GA)
+
+names(CAB_data_dem_imputed)
+
+#Invert Political Discussion Factor
+table(CAB_data_dem_imputed$pol_discuss)
+CAB_data_dem_imputed <- CAB_data_dem_imputed %>%
+  mutate(pol_discuss = factor(
+    pol_discuss,
+    levels = c("Never", 
+               "Less often than once a week", 
+               "Once a week", 
+               "Three to five days a week", 
+               "Once a day", 
+               "A few times a day"),
+    ordered = TRUE
+  ))
+table(CAB_data_dem_imputed$pol_discuss)
+
+
+save.image("C:/Users/User/Dropbox/Research/Internet Politics/Central Asia/Central Asia Grant Survey Project/Dinner Table/GitHub-Dinner/dinner_data.RData")
+
+ 
+#Analysis###########################################################
+#Figure 1 - Distribution on Individual Critical Flow Items
+# Load necessary libraries
+library(ggplot2)
+library(ggpubr)
+library(grid)
+library(dplyr)
+library(stargazer)
+
+figure1a <- ggplot(CAB_data_dem_imputed, aes(x = pol_discuss, fill = pol_discuss, weight = weight)) +
+  geom_bar(aes(y = after_stat((..count..) / sum(..count..)) * 100), stat = "count") +
+  geom_text(stat = "count", aes(y = after_stat((..count..) / sum(..count..)) * 100, 
+                                label = sprintf("%.1f%%", after_stat((..count..) / sum(..count..)) * 100)), 
+            position = position_stack(vjust = -0.2), color = "black", fontface = "bold") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1, scale = 1), limits = c(0, 35), name = "") +
+  labs(title = "Political Discussion", x = NULL) +
+  scale_fill_discrete(name = "") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Removes the legend
+figure1a
+
+figure1b <- ggplot(CAB_data_dem_imputed, aes(x = pol_disagree_no, fill = pol_disagree_no, weight = weight)) +
+  geom_bar(aes(y = after_stat((..count..) / sum(..count..)) * 100), stat = "count") +
+  geom_text(stat = "count", aes(y = after_stat((..count..) / sum(..count..)) * 100, 
+                                label = sprintf("%.1f%%", after_stat((..count..) / sum(..count..)) * 100)), 
+            position = position_stack(vjust = -0.2), color = "black", fontface = "bold") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1, scale = 1), limits = c(0, 35), name = "") +
+  labs(title = "Political Disagreement", x = NULL) +
+  scale_fill_discrete(name = "") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Removes the legend
+figure1b
+
+# Figure 1 - Combine Plots into a Single Figure
+figure1 <- ggarrange(
+  figure1a, figure1b,
+  ncol = 2, nrow = 1)
+figure1
+
+#Figure2 - Distribution of Exposure to Critical Information via Social and Legacy Media
+# Social Media Critical Flow 
+.df <- data.frame(y = CAB_data_dem_imputed$sm_critical_index, weight = CAB_data_dem_imputed$weight)
+figure2a <- ggplot(data = .df, aes(x = "", y = y, weight = weight)) + 
+  geom_violin(trim = FALSE, fill = "#69b3a2", color = "black", alpha = 0.7) +
+  stat_summary(fun = "mean", geom = "point", size = 3, shape = 18, color = "red") +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.1, 
+               fun.args = list(conf.int = 0.95), color = "darkred") +
+  labs(
+    title = "Social Media - Critical Flow",
+    y = "SM Critical Exposure Index",
+    x = NULL
+  ) +
+  theme_minimal(base_size = 16, base_family = "sans") +
+  theme(
+    axis.ticks.x = element_blank(), 
+    axis.text.x = element_blank(),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold")
+  )
+print(figure2a)
+rm(.df)
+
+# Television Critical Flow 
+.df <- data.frame(y = CAB_data_dem_imputed$tv_critical_index, weight = CAB_data_dem_imputed$weight)
+figure2b <- ggplot(data = .df, aes(x = "", y = y, weight = weight)) + 
+  geom_violin(trim = FALSE, fill = "#ffcc66", color = "black", alpha = 0.7) +
+  stat_summary(fun = "mean", geom = "point", size = 3, shape = 18, color = "red") +
+  stat_summary(fun.data = "mean_cl_normal", geom = "errorbar", width = 0.1, 
+               fun.args = list(conf.int = 0.95), color = "darkred") +
+  labs(
+    title = "Television - Critical Flow",
+    y = "TV Critical Exposure Index",
+    x = NULL
+  ) +
+  theme_minimal(base_size = 16, base_family = "sans") +
+  theme(
+    axis.ticks.x = element_blank(), 
+    axis.text.x = element_blank(),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold")
+  )
+print(figure2b)
+rm(.df)
+
+# Figure 2 - Combine Plots into a Single Figure
+figure2 <- ggarrange(
+  figure2a, figure2b,
+  ncol = 2, nrow = 1)
+figure2
+
+
+#Table 1 - Modeling offline Political Discussion
+# Mediation Analysis ####################################################################
+library(mediation)
+
+# Full Models Including Mediator
+mod_discussion <- lm(pol_discuss_n_sc ~ sm_critical_index + tv_critical_index + pol_interest_n_sc + bubble_index +
+                       gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                       country_KZ + country_KG,
+                     data = CAB_data_dem_imputed, weights = weight)
+summary(mod_discussion)
+
+
+mod_disagreement <- lm(pol_disagree_n_sc_no ~  sm_critical_index + tv_critical_index + bubble_index +
+                         pol_interest_n_sc +
+                         gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                         country_KZ + country_KG,
+                       data = CAB_data_dem_imputed, weights = weight)
+summary(mod_disagreement)
+
+
+#Discussion Mediation Analysis for sm_critical_index
+library(mediation)
+med_discussion_sm <- mediate(model.m = lm(pol_interest_n_sc ~ sm_critical_index + bubble_index +
+                                         gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                                         country_KZ + country_KG,
+                                       data = CAB_data_dem_imputed, weights = weight),
+                          model.y = mod_discussion,
+                          treat = "sm_critical_index",
+                          mediator = "pol_interest_n_sc",
+                          boot = TRUE,
+                          sims = 100)
+summary(med_discussion)
+
+#Discussion Mediation Analysis for tv_critical_index
+med_discussion_tv <- mediate(model.m  = lm(pol_interest_n_sc ~ tv_critical_index + bubble_index +
+                                            gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                                            country_KZ + country_KG,
+                                          data = CAB_data_dem_imputed, weights = weight),
+                             model.y = mod_discussion,
+                             treat = "tv_critical_index",
+                             mediator = "pol_interest_n_sc",
+                             boot = TRUE,
+                             sims = 100)
+summary(med_discussion_tv)
+
+#Disagreement Mediation Analysis for sm_critical_index
+med_disagreement_sm <- mediate(model.m = lm(pol_interest_n_sc ~ sm_critical_index + bubble_index +
+                                              gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                                              country_KZ + country_KG,
+                                            data = CAB_data_dem_imputed, weights = weight),
+                               model.y = mod_disagreement,
+                               treat = "sm_critical_index",
+                               mediator = "pol_interest_n_sc",
+                               boot = TRUE,
+                               sims = 100)
+summary(med_disagreement_sm)
+
+# Disagreement Mediation Analysis for tv_critical_index
+med_disagreement_tv <- mediate(model.m = lm(pol_interest_n_sc ~ tv_critical_index + bubble_index +
+                                              gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                                              country_KZ + country_KG,
+                                            data = CAB_data_dem_imputed, weights = weight),
+                               model.y = mod_disagreement,
+                               treat = "tv_critical_index",
+                               mediator = "pol_interest_n_sc",
+                               boot = TRUE,
+                               sims = 100)
+summary(med_disagreement_tv)
+
+#Second Level Mediating Models for Table
+model.m.discussion_sm = lm(pol_interest_n_sc ~ sm_critical_index + bubble_index +
+                             gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                             country_KZ + country_KG,
+                           data = CAB_data_dem_imputed, weights = weight)
+summary(model.m.discussion_sm)
+
+model.m.discussion_tv  = lm(pol_interest_n_sc ~ tv_critical_index + bubble_index +
+                              gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                              country_KZ + country_KG,
+                            data = CAB_data_dem_imputed, weights = weight)
+summary(model.m.discussion_tv)
+
+model.m.disagreement_sm = lm(pol_interest_n_sc ~ sm_critical_index + bubble_index +
+                               gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                               country_KZ + country_KG,
+                             data = CAB_data_dem_imputed, weights = weight)
+summary(model.m.disagreement_sm)
+
+model.m.disagreement_tv = lm(pol_interest_n_sc ~ tv_critical_index + bubble_index +
+                               gender_Male + age_n_sc + urbanicity_Village + edu_n_sc + inc_n_sc +
+                               country_KZ + country_KG,
+                             data = CAB_data_dem_imputed, weights = weight)
+summary(model.m.disagreement_tv)
+
+
+stargazer(
+  mod_discussion, mod_disagreement, 
+  type = "latex",
+  title = "Mediation Models",
+  covariate.labels = c(
+    "SM Critical Index", 
+    "TV Critical Index", 
+    "Bubble Index", 
+    "Political Interest (Mediator)", 
+    "Male", 
+    "Age", 
+    "Village", 
+    "Education", 
+    "Income", 
+    "Kazakhstan", 
+    "Kyrgyzstan"
+  ),
+  dep.var.labels = c(
+    "Political Discussion", 
+    "Political Disagreement"
+  ),
+  star.cutoffs = c(0.05),
+  align = TRUE,
+  digits = 2 # Rounds coefficients to two decimal places
+)
+
+stargazer(
+  model.m.discussion_sm, model.m.disagreement_sm, 
+  type = "latex",
+  title = "Mediation Models",
+  covariate.labels = c(
+    "SM Critical Index", 
+    "Bubble Index", 
+    "Political Interest (Mediator)", 
+    "Male", 
+    "Age", 
+    "Village", 
+    "Education", 
+    "Income", 
+    "Kazakhstan", 
+    "Kyrgyzstan"
+  ),
+  dep.var.labels = c(
+    "Political Interest", 
+    "Political Interest"
+  ),
+  star.cutoffs = c(0.05),
+  align = TRUE,
+  digits = 2 # Rounds coefficients to two decimal places
+)
+
+stargazer(
+  model.m.discussion_tv, model.m.disagreement_tv, 
+  type = "latex",
+  title = "Mediation Models",
+  covariate.labels = c(
+    "TV Critical Index", 
+    "Bubble Index", 
+    "Political Interest (Mediator)", 
+    "Male", 
+    "Age", 
+    "Village", 
+    "Education", 
+    "Income", 
+    "Kazakhstan", 
+    "Kyrgyzstan"
+  ),
+  dep.var.labels = c(
+    "Political Interest", 
+    "Political Interest"
+  ),
+  star.cutoffs = c(0.05),
+  align = TRUE,
+  digits = 2 # Rounds coefficients to two decimal places
+)
+
+# Bar Plot Visualization of Mediation Effects
+library(ggplot2)
+library(ggpubr)
+
+# Correct extraction of mediation results
+prop_med_discussion_sm <- summary(med_discussion)$prop.med[1]
+prop_med_discussion_tv <- summary(med_discussion_tv)$prop.med[1]
+prop_med_disagree_sm <- summary(med_disagreement_sm)$prop.med[1]
+prop_med_disagree_tv <- summary(med_disagreement_tv)$prop.med[1]
+
+# Correct extraction of mediation results
+results_sm <- data.frame(
+  Effect = c("Direct Effect", "Indirect Effect", "Proportion Mediated"),
+  Estimate = c(
+    med_discussion$d0[[1]],
+    med_discussion$z0[[1]],
+    med_discussion$z0[[1]] / (med_discussion$d0[[1]] + med_discussion$z0[[1]])  # Proportion Mediated
+  ),
+  Mediator = "Critical SM"
+)
+
+results_tv <- data.frame(
+  Effect = c("Direct Effect", "Indirect Effect", "Proportion Mediated"),
+  Estimate = c(
+    med_discussion_tv$d0[[1]],
+    med_discussion_tv$z0[[1]],
+    med_discussion_tv$z0[[1]] / (med_discussion_tv$d0[[1]] + med_discussion_tv$z0[[1]])  # Proportion Mediated
+  ),
+  Mediator = "Critical TV"
+)
+
+results_disagree_sm <- data.frame(
+  Effect = c("Direct Effect", "Indirect Effect", "Proportion Mediated"),
+  Estimate = c(
+    med_disagreement_sm$d0[[1]],  # Direct Effect
+    med_disagreement_sm$z0[[1]],  # Indirect Effect
+    med_disagreement_sm$z0[[1]] / (med_disagreement_sm$d0[[1]] + med_disagreement_sm$z0[[1]])  # Proportion Mediated
+  ),
+  Mediator = "Critical SM"
+)
+
+results_disagree_tv <- data.frame(
+  Effect = c("Direct Effect", "Indirect Effect", "Proportion Mediated"),
+  Estimate = c(
+    med_disagreement_tv$d0[[1]],  # Direct Effect
+    med_disagreement_tv$z0[[1]],  # Indirect Effect
+    med_disagreement_tv$z0[[1]] / (med_disagreement_tv$d0[[1]] + med_disagreement_tv$z0[[1]])  # Proportion Mediated
+  ),
+  Mediator = "Critical TV"
+)
+
+
+# Combine results for discussion
+results_discussion <- rbind(results_sm, results_tv)
+
+# Combine results for disagreement
+results_disagreement <- rbind(results_disagree_sm, results_disagree_tv)
+
+# Create bar plots with specific y-axis limits
+discussion_plot <- ggplot(results_discussion, aes(x = Effect, y = Estimate, fill = Mediator)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = round(Estimate, 2)),
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(
+    title = "Mediation Effects on Political Discussion",
+    x = NULL,
+    y = "Effect Estimate",
+    fill = "Treatment"
+  ) +
+  ylim(0, 0.5) + # Set y-axis limit for discussion_plot
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+disagreement_plot <- ggplot(results_disagreement, aes(x = Effect, y = Estimate, fill = Mediator)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = round(Estimate, 2)),
+            position = position_dodge(width = 0.9), vjust = -0.5) +
+  labs(
+    title = "Mediation Effects on Political Disagreement",
+    x = NULL,
+    y = "Effect Estimate",
+    fill = "Treatment"
+  ) +
+  ylim(0, 0.7) + # Set y-axis limit for disagreement_plot
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Combine plots into one figure using ggpubr
+figure3 <- ggarrange(
+  discussion_plot, disagreement_plot,
+  ncol = 1, nrow = 2,
+  common.legend = TRUE, legend = "bottom"
+)
+figure3
+
+
+save.image("C:/Users/User/Dropbox/Research/Internet Politics/Central Asia/Central Asia Grant Survey Project/Dinner Table/GitHub-Dinner/dinner_data.RData")

@@ -193,25 +193,25 @@ CAB_data_dem$sil_obs_index <- rescale(
 )
 table(CAB_data_dem$sil_obs_index)
 
-CAB_data_dem$sm_engage_friends_smw =  rescale(CAB_data_dem$sm_engage_friends_n_sc_sm_no, to = c(1, 0)) # 1 means more
-CAB_data_dem$sm_engage_groups_smw =  rescale(CAB_data_dem$sm_engage_groups_n_sc_sm_no, to = c(1, 0)) # 1 means more
-CAB_data_dem$sm_engage_post_smw = rescale(CAB_data_dem$sm_engage_post_n_sc_sm_no, to = c(1, 0)) # 1 means more
+CAB_data_dem$sm_engage_friends_smw =  rescale(CAB_data_dem$sm_engage_friends_n_sc_sm_no, to = c(0, 1)) # 1 means more
+CAB_data_dem$sm_engage_groups_smw =  rescale(CAB_data_dem$sm_engage_groups_n_sc_sm_no, to = c(0, 1)) # 1 means more
+CAB_data_dem$sm_engage_post_smw = rescale(CAB_data_dem$sm_engage_post_n_sc_sm_no, to = c(0, 1)) # 1 means more
 
-#SM Warriors
-sm_warriors <- cbind(
+
+#Digitally Politically Engaged
+dig_pol_engage <- cbind(
   CAB_data_dem$sm_engage_friends_smw,
   CAB_data_dem$sm_engage_groups_smw,
   CAB_data_dem$sm_engage_post_smw)
 
-cronbach(sm_warriors)
+cronbach(dig_pol_engage)
 
-CAB_data_dem$sm_warriors_index <- rescale(
+CAB_data_dem$dig_pol_engage_index <- rescale(
   CAB_data_dem$sm_engage_friends_smw+
   CAB_data_dem$sm_engage_groups_smw+
   CAB_data_dem$sm_engage_post_smw,
   to = c(0, 1)
 )
-
 
 # The Selective Avoiders ####
 selective_avoiders = cbind(
@@ -590,29 +590,27 @@ table(CAB_data_dem$country_KZ)
 table(CAB_data_dem$country_KG)
 table(CAB_data_dem$country_GA)
 
-summary(lm(critical_social_media ~ national_defenders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-summary(lm(critical_social_media ~ idconsisten_conserv_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-summary(lm(critical_social_media ~ surv_averse_lib_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(national_defenders_index ~ critical_social_media  + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(idconsisten_conserv_index ~ critical_social_media + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(surv_averse_lib_index ~ critical_social_media + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(sil_obs_index ~ critical_social_media + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(dig_pol_engage_index ~ critical_social_media + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(selective_avoiders_index ~ critical_social_media + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 
 summary(lm(positive_social_media ~ national_defenders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(positive_social_media ~ idconsisten_conserv_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(positive_social_media ~ surv_averse_lib_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(positive_social_media ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(positive_social_media ~ dig_pol_engage_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(positive_social_media ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 
 summary(lm(critical_tv_index ~ national_defenders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(critical_tv_index ~ idconsisten_conserv_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(critical_tv_index ~ surv_averse_lib_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-
-summary(lm(critical_social_media ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-summary(lm(positive_social_media ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(critical_tv_index ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-
-summary(lm(critical_social_media ~ sm_warriors_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-summary(lm(positive_social_media ~ sm_warriors_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-summary(lm(critical_tv_index ~ sm_warriors_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-
-summary(lm(critical_social_media ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
-summary(lm(positive_social_media ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(critical_tv_index ~ dig_pol_engage_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(critical_tv_index ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+
 
 
 #THIS IS THE BIG BANG AT THE END
@@ -620,3 +618,6 @@ summary(lm(critical_tv_index ~ selective_avoiders_index + gen_sm_index + age_n_s
 summary(lm(news_balance_n_sc ~ national_defenders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(news_balance_n_sc  ~ idconsisten_conserv_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
 summary(lm(news_balance_n_sc  ~ surv_averse_lib_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(news_balance_n_sc  ~ sil_obs_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(news_balance_n_sc  ~ dig_pol_engage_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))
+summary(lm(news_balance_n_sc  ~ selective_avoiders_index + gen_sm_index + age_n_sc + urbanicity_Village + gender_Male + edu_n_sc + inc_n_sc + country_KZ + country_KG, data = CAB_data_dem))

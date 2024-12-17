@@ -1,0 +1,29 @@
+library(scales)
+#Bubble Index 
+#Invert disagreement to run same direction as avoidance and echo chamber
+CAB_data_dem$sm_disagreement_politics_n_sc_no_i = rescale(CAB_data_dem$sm_disagreement_politics_n_sc_no, to = c(1, 0))
+CAB_data_dem$sm_disagreement_issues_n_sc_no_i = rescale(CAB_data_dem$sm_disagreement_issues_n_sc_no, to = c(1, 0))
+CAB_data_dem$sm_disagreement_news_n_sc_no_i = rescale(CAB_data_dem$sm_disagreement_news_n_sc_no, to = c(1, 0))
+
+library(psy)
+bubble_matrix = cbind(
+  CAB_data_dem$avoidance_blocking_n_sc_no,
+  CAB_data_dem$avoidance_unfriending_n_sc_no,
+  CAB_data_dem$avoidance_leaving_group_n_sc_no,
+  CAB_data_dem$avoidance_unsubscribing_n_sc_no,
+  CAB_data_dem$sm_disagreement_politics_n_sc_no_i,
+  CAB_data_dem$sm_disagreement_issues_n_sc_no_i,
+  CAB_data_dem$sm_disagreement_news_n_sc_no_i,
+  CAB_data_dem$echo_chamber_n_sc_no)
+cronbach(bubble_matrix)
+
+CAB_data_dem$bubble_index = rescale((
+  CAB_data_dem$avoidance_blocking_n_sc_no +
+    CAB_data_dem$avoidance_unfriending_n_sc_no +
+    CAB_data_dem$avoidance_leaving_group_n_sc_no +
+    CAB_data_dem$avoidance_unsubscribing_n_sc_no +
+    CAB_data_dem$sm_disagreement_politics_n_sc_no_i +
+    CAB_data_dem$sm_disagreement_issues_n_sc_no_i +
+    CAB_data_dem$sm_disagreement_news_n_sc_no_i +
+    CAB_data_dem$echo_chamber_n_sc_no), to = c(0, 1))
+summary(CAB_data_dem$bubble_index)

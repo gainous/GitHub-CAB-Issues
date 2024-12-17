@@ -1,0 +1,131 @@
+*Internet Use Items*
+*Days per week social media*
+tab V161495
+gen rc_V161495 = V161495
+foreach v of var rc_V161495 {
+su `v', meanonly
+replace `v' = (`v' - r(min))/(r(max) - r(min))
+}
+summ rc_V161495
+
+*Use at home- Yes/No*
+tab V161326
+gen rc_V161326 = V161326 * (-1)
+foreach v of var rc_V161326 {
+su `v', meanonly
+replace `v' = (`v' - r(min))/(r(max) - r(min))
+}
+summ rc_V161326
+
+*Internet - sites, chat rooms, or blogs Yes/No*
+tab V161363d
+gen rc_V161363d = V161363d
+foreach v of var rc_V161363d {
+su `v', meanonly
+replace `v' = (`v' - r(min))/(r(max) - r(min))
+}
+summ rc_V161363d
+
+*How many times R got info about 2016 campaign on the Internet*
+tab V162004 if V162004 ==2
+tab V162004 if V162004 ==3
+gen rc_V162004 = V162004
+foreach v of var rc_V162004{
+su `v', meanonly
+replace `v' = (`v' - r(min))/(r(max) - r(min))
+}
+summ rc_V162004
+
+*Visit Website of Candidate Yes/No*
+tab V162006 if V162006 == 1
+tab V162006 if V162006 == 2
+tab rc_V162006 if V162006 == 1
+tab rc_V162006 if V162006 == 2
+gen rcs_V162006 = rc_V162006
+foreach v of var rcs_V162006{
+su `v', meanonly
+replace `v' = (`v' - r(min))/(r(max) - r(min))
+}
+summ rcs_V162006
+
+pwcorr rc_V161495 rc_V161363d rc_V162004 rcs_V162006, sig
+
+V161095 Feeling Thermometer: Democratic Party
+V161096 Feeling Thermometer: Republican Party
+
+tab V161095
+tab V161096
+
+mvdecode V161095 V161096, mv (-99=.\-88=.\-89=.)
+
+
+*Ambivalence = [(P+ N)/2] - |P - N|
+
+gen partisan_ambiv = ((V161095 + V161096)/2) - (abs(V161095 - V161096))
+
+mi estimate: regress partisan_ambiv z_fac1_int_use z_trad_media z_knowledge minority_rnd ses female dem_age_r_x_s [pweight = V160101], vce(robust) 
+
+*Map partisan ambivalence accross time and use internet measure to show that it is responsible for the decrease - partisan lens 
+*is becoming stronger, motivating reasoning becomes thicker - all as a result of selective exposure, filter bubbles, more viceral
+*partisan discourse - us versus them
+
+*Vote in 2016
+tab V162031x
+*V162010 POST: R talk to anyone about voting for or against cand or pty
+tab V162010
+*V162011 POST: R go to any political meetings, rallies, speeches
+tab V162011
+*V162012 POST: R wear campaign button or post sign or bumper sticker
+tab V162012
+*V162013 POST: R do any (other) work for party or candidate
+tab V162013
+*V162014 POST: R contribute money to specific candidate campaign
+tab V162014
+*V162016 POST: R contribute money to political party
+tab V162016
+*V162017 POST: R contribute to any other group for/against a cand
+tab V162017
+*V162018a POST: DHS: Has R in past 12 months: joined a protest march
+tab V162018a
+*V162018b POST: DHS: Has Rin past 12 months: signed petition
+tab V162018b
+*V162018d POST: DHS: Has R in past 12 months: gave money to soc/pol org
+tab V162018d
+*V162019 POST: Contact U.S. Representative or Senator
+tab V162019
+
+mvdecode V162031x V162010 V162011 V162012 V162013 V162014 V162016 V162017 V162018a V162018b V162018d V162019, ///
+mv (-9=.\-8=.\-7=.\-6=.\-1=.)
+
+recode V162010 V162011 V162012 V162013 V162014 V162016 V162017 V162018a V162018b V162018d V162019 (2 = 0) (1 = 1), prefix(rc_)
+
+bysort _mi_m: alpha V162031x rc_V162010 rc_V162011 rc_V162012 rc_V162013 rc_V162014 rc_V162016 rc_V162017 rc_V162018a ///
+rc_V162018b rc_V162018d rc_V162019
+
+gen participate = V162031x + rc_V162010 + rc_V162011 + rc_V162012 + rc_V162013 + rc_V162014 + rc_V162016 + rc_V162017 + ///
+rc_V162018a + rc_V162018b + rc_V162018d + rc_V162019
+
+foreach v of var participate{
+su `v', meanonly
+replace `v' = (`v' - r(min))/(r(max) - r(min))
+}
+summ participate
+
+V161080x PRE: SUMMARY ‐ Approval/disapproval Congress handling job
+V161082x PRE: SUMMARY ‐ Approval/disapproval President handling job
+*V161086 PRE: Feeling Thermometer: Democratic Presidential cand
+tab V161086
+*V161087 PRE: Feeling Thermometer: Republican Presidential can7
+tab V161087
+
+mvdecode V161086 V161087, mv (-99=.\-88=.)
+
+
+mi estimate: logit V162031x partisan_ambiv z_fac1_int_use z_trad_media z_knowledge minority_rnd ses female dem_age_r_x_s [pweight = V160101], vce(robust) 
+
+mi estimate: logit V162031x c.partisan_ambiv##c.z_fac1_int_use z_trad_media z_knowledge minority_rnd ses female dem_age_r_x_s [pweight = V160101], vce(robust) 
+
+mi estimate:  nbreg participate partisan_ambiv z_fac1_int_use z_trad_media z_knowledge minority_rnd ses female dem_age_r_x_s [pweight = V160101], vce(robust) dispersion(mean)
+mi estimate:  nbreg participate c.partisan_ambiv##c.z_fac1_int_use z_trad_media z_knowledge minority_rnd ses female dem_age_r_x_s [pweight = V160101], vce(robust) dispersion(mean)
+
+mi estimate: regress V161087 partisan_ambiv z_fac1_int_use z_trad_media z_knowledge minority_rnd ses female dem_age_r_x_s [pweight = V160101], vce(robust) 
